@@ -11,7 +11,7 @@ parameters:
 - name: image
   type: string
   default: ''
-- name: label
+- name: conda_label
   type: string
   default: 'test'
 - name: package_list
@@ -50,7 +50,7 @@ stages:
                 downloadPath: '$(Build.StagingDirectory)/packages'
               displayName: 'Retrieve built conda package'
             - bash: |
-                anaconda --token "$ANACONDA_TOKEN" upload --user scipp --label ${{ parameters.label }} '$(Build.StagingDirectory)/packages/${{ package.Key }}/'scipp-*.tar.bz2
+                anaconda --token "$ANACONDA_TOKEN" upload --user scipp --label ${{ parameters.conda_label }} '$(Build.StagingDirectory)/packages/${{ package.Key }}/'scipp-*.tar.bz2
               env:
                 ANACONDA_TOKEN: $(anaconda_token_secret)
               displayName: 'Deploy ${{ package.Key }}'
@@ -95,7 +95,7 @@ stages:
               cd ${{ parameters.documentation_repo_path }}
               # The .nojekyll file is used to turn off GitHub Pages building
               touch .nojekyll
-              rsync -av "${{ documentation_artefact_path }}/" .
+              rsync -av "${{ parameters.documentation_artefact_path }}/" .
               git add .
               git status
             displayName: 'Copy new documentation'
@@ -104,7 +104,7 @@ stages:
               release_docs_dir="release/$(git describe --tags)"
               cd ${{ parameters.documentation_repo_path }}
               mkdir -p "$release_docs_dir"
-              rsync -av "${{ documentation_artefact_path }}/" "$release_docs_dir"
+              rsync -av "${{ parameters.documentation_artefact_path }}/" "$release_docs_dir"
               git add .
               git status
             condition: and(succeeded(), ${{ parameters.release }})
