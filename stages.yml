@@ -1,24 +1,24 @@
 parameters:
-- name: 'py_versions'
-  type: object
-  default:
-    linux: ['3.7']
-    osx: ['3.7']
-    windows: ['3.7']
-- name: 'settings'
+- name: 'config'
   type: object
   default:
     linux:
       image: 'ubuntu-20.04'
       conda_package_root: 'linux-64'
+      py_versions: ['3.7']
+      conda_env: ''
       params:
         ccache: true
     osx:
       image: 'macOS-10.14'
       conda_package_root: 'osx-64'
+      py_versions: ['3.7']
+      conda_env: ''
       params:
         OSX_VERSION: '10.15'
     windows:
+      py_versions: ['3.7']
+      conda_env: ''
       image: 'windows-latest'
       conda_package_root: 'win-64'
 - name: 'deploy'
@@ -30,6 +30,9 @@ parameters:
 - name: conda_label
   type: string
   default: 'test'
+- name: conda_env
+  type: string
+  default: ''
 - name: verbose
   type: boolean
   default: false
@@ -37,35 +40,37 @@ parameters:
 stages:
   - template: code_quality_checks.yml
     parameters:
-      image: ${{ parameters.settings.linux.image }}
+      image: ${{ parameters.config.linux.image }}
 
   - stage: 'build_and_test'
     displayName: 'Build and Test'
     jobs:
-      - ${{ each os in parameters.py_versions }}:
-        - ${{ each py in os.Value }}:
+      - ${{ each os in parameters.config }}:
+        - ${{ each py in os.Value.py_versions }}:
           - template: build.yml
             parameters:
               verbose: ${{ parameters.verbose }}
               py_version: ${{ py }}
-              image: ${{ parameters.settings[os.Key].image }}
-              conda_package_root: ${{ parameters.settings[os.Key].conda_package_root }}
-              ${{ each param in parameters.settings[os.Key].params }}:
+              image: ${{ os.Value.image }}
+              conda_package_root: ${{ os.Value.conda_package_root }}
+              conda_env: ${{ os.Value.conda_env }}
+              ${{ each param in os.Value.params }}:
                 ${{ param.Key }}: ${{ param.Value }}
 
   - template: documentation.yml
     parameters:
-      image: ${{ parameters.settings.linux.image }}
-      conda_package_root: ${{ parameters.settings.linux.conda_package_root }}
+      image: ${{ parameters.config.linux.image }}
+      conda_package_root: ${{ parameters.config.linux.conda_package_root }}
+      conda_env: ${{ parameters.conda_env }}
       py_version: '3.7'
 
   - ${{ if eq(parameters.deploy, true) }}:
     - template: deploy.yml
       parameters:
-        image: ${{ parameters.settings.linux.image }}
+        image: ${{ parameters.config.linux.image }}
         release: ${{ parameters.release }}
         conda_label: ${{ parameters.conda_label }}
         package_list:
-          ${{ each os in parameters.py_versions }}:
-            ${{ each py in os.Value }}:
-              ${{ parameters.settings[os.Key].conda_package_root }}-py${{ py }}: true
+          ${{ each os in parameters.config }}:
+            ${{ each py in os.Value.py_versions }}:
+              ${{ os.Value.conda_package_root }}-py${{ py }}: true

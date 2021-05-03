@@ -14,6 +14,9 @@ parameters:
 - name: conda_package_root
   type: string
   default: ''
+- name: conda_env
+  type: string
+  default: ''
 - name: verbose
   type: boolean
   default: false
@@ -66,13 +69,14 @@ jobs:
           conda install --yes conda-build
           conda config --set always_yes yes --set changeps1 no
           # Specify python version in env file
-          sed 's/- python$/- python=${{ parameters.py_version }}/g' scipp-developer-minimal.yml > temp-env.yml
+          sed 's/- python$/- python=${{ parameters.py_version }}/g' ${{ parameters.conda_env }} > temp-env.yml
+          sed -i 's/name: .*/name: temp-env/' temp-env.yml
           conda env create -f temp-env.yml
         displayName: 'Create conda environment'
 
       - bash: |
           set -ex
-          source activate scipp-developer
+          source activate temp-env
           tools/make_and_install.$FILE_EXTENSION
         displayName: 'Build and run C++ tests'
 

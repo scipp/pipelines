@@ -4,6 +4,9 @@ parameters:
 - name: conda_package_root
   type: string
   default: ''
+- name: conda_env
+  type: string
+  default: ''
 - name: py_version
   type: string
   default: ''
@@ -42,17 +45,18 @@ stages:
               set -ex
               # Specify python version in env file
               sed 's/- python$/- python=${{ parameters.py_version }}/g' scipp-developer.yml > temp-env.yml
+              sed -i 's/name: .*/name: temp-env/' temp-env.yml
               conda env create -f temp-env.yml
             displayName: 'Create Conda environment'
           - bash: |
               set -ex
-              source activate scipp-developer
-              conda install "$(packages_dir)/$(package_name)/"scipp-*.tar.bz2
+              source activate temp-env
+              conda install "$(packages_dir)/$(package_name)/"scipp*.tar.bz2
             displayName: 'Install Scipp package'
           - bash: |
               set -ex
               cd docs
-              source activate scipp-developer
+              source activate temp-env
               # Build documentation, redirecting doctrees to avoid size bloat in build documentation
               sphinx-build -d "$(mktemp -d)" . "$(docs_build_dir)"
               # Remove Juptyer notebooks used for documentation build, they are not accessible and create size bloat
