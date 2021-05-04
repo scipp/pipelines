@@ -16,8 +16,8 @@ parameters:
       image: 'windows-latest'
       conda_package_root: 'win-64'
 - name: 'config'
-    type: object
-    default: []
+  type: object
+  default: []
 - name: 'deploy'
   type: boolean
   default: false
