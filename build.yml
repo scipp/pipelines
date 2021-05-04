@@ -69,13 +69,14 @@ jobs:
           conda install --yes conda-build
           conda config --set always_yes yes --set changeps1 no
           # Specify env name and python version in env file
-          sed -e 's/- python$/- python=${{ parameters.py_version }}/g' -e 's/name: .*/name: temp-env/g' ${{ parameters.conda_env }} > temp-env.yml
-          conda env create -f temp-env.yml
+          sed -e 's/- python$/- python=${{ parameters.py_version }}/g' \
+              -e 's/name: .*/name: tempenv/g' ${{ parameters.conda_env }} > tempenv.yml
+          conda env create -f tempenv.yml
         displayName: 'Create conda environment'
 
       - bash: |
           set -ex
-          source activate temp-env
+          source activate tempenv
           tools/make_and_install.$FILE_EXTENSION
         displayName: 'Build and run C++ tests'
 
