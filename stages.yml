@@ -1,5 +1,5 @@
 parameters:
-- name: 'settings'
+- name: settings
   type: object
   default:
     linux:
@@ -15,10 +15,10 @@ parameters:
     windows:
       image: 'windows-latest'
       conda_package_root: 'win-64'
-- name: 'config'
+- name: config
   type: object
   default: []
-- name: 'deploy'
+- name: deploy
   type: boolean
   default: false
 - name: release
