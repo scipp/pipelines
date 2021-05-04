@@ -45,7 +45,7 @@ stages:
               set -ex
               # Specify python version in env file
               sed 's/- python$/- python=${{ parameters.py_version }}/g' scipp-developer.yml > temp-env.yml
-              sed -i 's/name: .*/name: temp-env/' temp-env.yml
+              sed -i 's/name: .*/name: temp-env/g' temp-env.yml
               conda env create -f temp-env.yml
             displayName: 'Create Conda environment'
           - bash: |
