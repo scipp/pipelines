@@ -87,7 +87,8 @@ jobs:
 
       - bash: |
           set -ex
-          conda build $VERBOSE_OPTION --channel conda-forge --python=${{ parameters.py_version }} --no-anaconda-upload conda
+          conda build $VERBOSE_OPTION --channel conda-forge --channel scipp \
+            --python=${{ parameters.py_version }} --no-anaconda-upload conda
         displayName: 'Python tests and conda build'
 
       - task: PublishBuildArtifacts@1
