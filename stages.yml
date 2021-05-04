@@ -30,6 +30,9 @@ parameters:
 - name: conda_env
   type: string
   default: ''
+- name: conda_channels
+  type: string
+  default: ''
 - name: verbose
   type: boolean
   default: false

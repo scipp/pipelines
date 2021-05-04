@@ -17,6 +17,9 @@ parameters:
 - name: conda_env
   type: string
   default: ''
+- name: conda_channels
+  type: string
+  default: ''
 - name: verbose
   type: boolean
   default: false
@@ -87,7 +90,8 @@ jobs:
 
       - bash: |
           set -ex
-          conda build $VERBOSE_OPTION --channel conda-forge --channel scipp \
+          conda build $VERBOSE_OPTION \
+            --channel conda-forge ${{ parameters.conda_channels }} \
             --python=${{ parameters.py_version }} --no-anaconda-upload conda
         displayName: 'Python tests and conda build'
 
