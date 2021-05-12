@@ -37,7 +37,7 @@ stages:
               downloadType: 'single'
               artifactName: '$(package_name)'
               downloadPath: '$(packages_dir)'
-            displayName: 'Download previously built Conda package'
+            displayName: 'Download previously built conda package'
           - bash: |
               echo "##vso[task.prependpath]$CONDA/bin"
             displayName: Add Conda to PATH
@@ -51,7 +51,7 @@ stages:
               set -ex
               source activate tempenv
               conda install "$(packages_dir)/$(package_name)/"scipp*.tar.bz2
-            displayName: 'Install Scipp package'
+            displayName: 'Install previously built conda package'
           - bash: |
               set -ex
               cd docs
