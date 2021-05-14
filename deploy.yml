@@ -2,12 +2,6 @@ parameters:
 - name: release
   type: boolean
   default: false
-- name: documentation_artefact_path
-  type: string
-  default: '$(Build.StagingDirectory)/documentation'
-- name: documentation_repo_path
-  type: string
-  default: '$(Build.StagingDirectory)/git'
 - name: image
   type: string
   default: ''
