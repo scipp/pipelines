@@ -23,7 +23,7 @@ cmake \
   ../test
 
 # Show cmake settings
-cmake -B . -S .. -LA
+cmake -B . -S ../test -LA
 
 # Build benchmarks, C++ tests and install Python package
 ninja -v pipelines-test
