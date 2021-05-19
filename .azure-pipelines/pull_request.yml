@@ -1,0 +1,31 @@
+parameters:
+- name: verbose
+  displayName: Verbose
+  type: boolean
+  default: false
+
+trigger:
+  branches:
+    exclude:
+      - '*'
+
+pr:
+  autoCancel: true
+  branches:
+    include:
+      - '*'
+
+extends:
+  template: ../stages.yml
+  parameters:
+    verbose: ${{ parameters.verbose }}
+    config:
+      linux:
+        py_versions: ['3.7']
+        conda_env: 'pipelines-developer.yml'
+      osx:
+        py_versions: ['3.7']
+        conda_env: 'pipelines-developer.yml'
+      windows:
+        py_versions: ['3.7']
+        conda_env: 'pipelines-developer.yml'
