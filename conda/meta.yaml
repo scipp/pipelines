@@ -17,8 +17,6 @@ requirements:
     - python {{ python }}
 
 test:
-  import:
-    - scipp
   requires:
     - pytest
   source_files:

@@ -18,4 +18,5 @@ add_executable(${TARGET_NAME} EXCLUDE_FROM_ALL test.cpp)
 include_directories(SYSTEM ${GTEST_INCLUDE_DIR})
 target_link_libraries(${TARGET_NAME} LINK_PRIVATE gtest_main ${GTEST_LIBRARIES})
 
+include(GNUInstallDirs)
 install(DIRECTORY "python/src/pipelines-test/" DESTINATION "pipelines-test")

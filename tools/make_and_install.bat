@@ -9,7 +9,7 @@ cmake -B . -S .. -LA
 
 :: C++ tests
 cmake --build . --target pipelines-test --config Release -- /m:%NUMBER_OF_PROCESSORS% || echo ERROR && exit /b
-pipelines-test.exe || echo ERROR && exit /b
+Release\pipelines-test.exe || echo ERROR && exit /b
 
 :: Build and install Python library
 cmake --build . --target install --config Release -- /m:%NUMBER_OF_PROCESSORS% || echo ERROR && exit /b
