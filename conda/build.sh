@@ -14,17 +14,11 @@ set -ex
 
 if test -z "${INSTALL_PREFIX}"
 then
-  export INSTALL_PREFIX="$(pwd)/scipp_install"
+  export INSTALL_PREFIX="$(pwd)/pipelines_install"
   ./tools/make_and_install.sh
 fi
 
 # The final step in the conda-build process is to move the install targets to
 # the correct location to build the package.
 
-mv "$INSTALL_PREFIX"/scipp "$CONDA_PREFIX"/lib/python*/
-mv "$INSTALL_PREFIX"/lib/libscipp* "$CONDA_PREFIX"/lib/
-mv "$INSTALL_PREFIX"/lib/libunits-shared.* "$CONDA_PREFIX"/lib/
-mv "$INSTALL_PREFIX"/lib/cmake/scipp "$CONDA_PREFIX"/lib/cmake/
-mv "$INSTALL_PREFIX"/include/Eigen "$CONDA_PREFIX"/include/
-mv "$INSTALL_PREFIX"/include/scipp* "$CONDA_PREFIX"/include/
-mv "$INSTALL_PREFIX"/include/units "$CONDA_PREFIX"/include/
+mv "$INSTALL_PREFIX"/pipelines-test "$CONDA_PREFIX"/lib/python*/
