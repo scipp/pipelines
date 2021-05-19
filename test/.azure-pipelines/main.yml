@@ -1,3 +1,5 @@
+# Note: This is testing for the `Main` pipeline, but since we are testing
+# the template we trigger from PRs here
 parameters:
 - name: verbose
   displayName: Verbose
@@ -5,9 +7,16 @@ parameters:
   default: false
 
 trigger:
-  - main
+  branches:
+    exclude:
+      - '*'
 
-pr: none
+pr:
+  autoCancel: true
+  branches:
+    include:
+      - '*'
+
 
 extends:
   template: ../../stages.yml
