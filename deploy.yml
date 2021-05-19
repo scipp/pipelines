@@ -16,7 +16,7 @@ parameters:
   default: ''
 - name: publish_docs
   type: boolean
-  default: false
+  default: true
 
 stages:
   - stage: 'deploy'
