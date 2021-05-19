@@ -16,7 +16,7 @@ pr:
       - '*'
 
 extends:
-  template: ../stages.yml
+  template: ../../stages.yml
   parameters:
     verbose: ${{ parameters.verbose }}
     config:
