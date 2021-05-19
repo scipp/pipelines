@@ -20,7 +20,7 @@ cmake \
   -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_VERSION \
   -DCMAKE_OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${OSX_VERSION}.sdk" \
   -DWITH_CTEST=OFF \
-  ..
+  ../test
 
 # Show cmake settings
 cmake -B . -S .. -LA
