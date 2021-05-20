@@ -29,3 +29,8 @@ extends:
       windows:
         py_versions: ['3.7']
         conda_env: 'pipelines-developer.yml'
+    # Note: At this point we are not testing deploy and release. Consider
+    # setting up a build matrix.
+    deploy: false
+    conda_label: 'dev'
+    release: true
