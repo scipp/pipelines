@@ -22,7 +22,7 @@ stages:
 
           - bash: |
               set -ex
-              sudo apt-get install --yes clang-format-10
+              sudo apt-get install --yes clang-format-10 cppcheck
               pip install cmake_format==0.6.9 flake8 yapf==0.30.0
             displayName: 'Install tooling'
 
@@ -39,8 +39,7 @@ stages:
 
           - bash: |
               set -ex
-              docker build ./tools -f ./tools/cppcheck.Dockerfile -t scipp_cppcheck
-              docker run --rm -v "$PWD":/data scipp_cppcheck
+              cppcheck --quiet --force --std=c++17 --enable=all -i common/include/scipp/common/span/ .
             displayName: 'Run cppcheck'
 
           - bash: |

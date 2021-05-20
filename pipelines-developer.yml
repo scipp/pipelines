@@ -1,0 +1,27 @@
+# This is used for incremental CI builds and local development.
+name: pipelines-developer
+
+channels:
+  - conda-forge
+
+dependencies:
+  # Build
+  - ninja
+
+  # Run
+  - python
+
+  # Test
+  - pytest
+
+  # Formatting & static analysis
+  - pre-commit
+  - yapf
+  - flake8
+
+  # Docs
+  - pandoc
+  - sphinx
+  - sphinx_rtd_theme
+  - nbsphinx
+  - docutils=0.16 # see https://github.com/spatialaudio/nbsphinx/issues/549
