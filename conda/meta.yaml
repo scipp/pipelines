@@ -12,6 +12,9 @@ requirements:
     - gxx_linux-64 9.3.* [linux64]
     - git
     - ninja
+    - python
+  run:
+    - python
 
 test:
   requires:
