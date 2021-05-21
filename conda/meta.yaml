@@ -1,0 +1,40 @@
+package:
+  name: pipelines-test
+  # Get version number from most recent Git tag
+  version: {{ GIT_DESCRIBE_TAG }}
+
+source:
+  path: ..
+
+requirements:
+  build:
+    - cmake
+    - gxx_linux-64 9.3.* [linux64]
+    - git
+    - ninja
+    - python
+  run:
+    - python
+
+test:
+  requires:
+    - pytest
+  source_files:
+    - python/tests
+  commands:
+    - python -m pytest -v python
+
+build:
+  # Build number is number of Git commits since last tag, if that fails use 0
+  number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
+  script_env:
+    - OSX_VERSION
+    - INSTALL_PREFIX
+
+about:
+  home: https://scipp.github.io/
+  license: BSD-3-Clause
+  summary: Test of common Azure pipelines repo for scipp
+  description: Test of common Azure pipelines repo for scipp
+  dev_url: https://github.com/scipp/pipelines
+  doc_url: https://scipp.github.io/

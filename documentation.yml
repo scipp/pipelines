@@ -50,7 +50,7 @@ stages:
           - bash: |
               set -ex
               source activate tempenv
-              conda install "$(packages_dir)/$(package_name)/"scipp*.tar.bz2
+              conda install "$(packages_dir)/$(package_name)/"*.tar.bz2
             displayName: 'Install previously built conda package'
           - bash: |
               set -ex
