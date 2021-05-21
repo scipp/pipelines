@@ -91,14 +91,15 @@ jobs:
           set -ex
           conda build $VERBOSE_OPTION \
             --channel conda-forge ${{ parameters.conda_channels }} \
-            --python=${{ parameters.py_version }} --no-anaconda-upload conda
+            --python=${{ parameters.py_version }} --no-anaconda-upload conda \
+            --override-channels
         displayName: 'Python tests and conda build'
 
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: "$(conda_dir)/conda-bld/${{ parameters.conda_package_root }}"
           ArtifactName: "${{ parameters.conda_package_root }}-py${{ parameters.py_version }}"
-        displayName: 'Publish Conda package artifacts'
+        displayName: 'Archive Conda package artifacts'
 
       - ${{ if eq(parameters.ccache, true) }}:
         - bash: ccache --show-stats

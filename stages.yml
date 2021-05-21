@@ -39,6 +39,9 @@ parameters:
 - name: verbose
   type: boolean
   default: false
+- name: publish_docs
+  type: boolean
+  default: true
 
 stages:
   - template: code_quality_checks.yml
@@ -73,6 +76,7 @@ stages:
       parameters:
         image: ${{ parameters.settings.linux.image }}
         release: ${{ parameters.release }}
+        publish_docs: ${{ parameters.publish_docs }}
         conda_label: ${{ parameters.conda_label }}
         gh_pages_subdirectory: ${{ parameters.gh_pages_subdirectory }}
         package_list:
