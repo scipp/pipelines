@@ -57,8 +57,8 @@ stages:
               cd docs
               source activate tempenv
               # If a docs preparation file exists, run it (e.g. fetch data files)
-              if test -f ../tools/pre_docs.sh; then
-                  ../tools/pre_docs.sh;
+              if test -f ../tools/pre_docs.py; then
+                  python ../tools/pre_docs.py;
               fi
               # Build documentation, redirecting doctrees to avoid size bloat
               sphinx-build -d "$(mktemp -d)" . "$(docs_build_dir)"
