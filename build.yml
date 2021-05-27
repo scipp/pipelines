@@ -79,7 +79,9 @@ jobs:
       - bash: |
           set -ex
           source activate tempenv
-          tools/make_and_install.$FILE_EXTENSION
+          python tools/build.py --install_prefix=$INSTALL_PREFIX \
+            --platform=${{ parameters.image }} --osxversion=$OSX_VERSION
+          # tools/make_and_install.$FILE_EXTENSION
         displayName: 'Build and run C++ tests'
 
       - ${{ if eq(parameters.verbose, true) }}:
