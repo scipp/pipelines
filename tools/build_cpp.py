@@ -100,7 +100,7 @@ def main(prefix='', build_dir=''):
     run_command(['cmake', '-B', '.', '-S', '..', '-LA'], shell=shell)
 
     # Compile C++ tests
-    run_command(['cmake', '--build', '.', '--target', 'pipelines-tests'] +
+    run_command(['cmake', '--build', '.', '--target', 'pipelines-test'] +
                 build_flags,
                 shell=shell)
 
