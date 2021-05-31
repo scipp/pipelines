@@ -109,7 +109,8 @@ def main(prefix='', build_dir=''):
                 shell=shell)
 
     # Run C++ tests
-    run_command([os.path.join('pipelines-test')], shell=shell)
+    run_command([os.path.join('.', build_config, 'pipelines-test')],
+                shell=shell)
 
 
 if __name__ == '__main__':
