@@ -31,8 +31,10 @@ parameters:
   type: string
   default: ''
 - name: conda_channels
-  type: string
-  default: ''
+  type: object
+  default:
+    main: ''
+    next: ''
 - name: gh_pages_subdirectory
   type: string
   default: ''

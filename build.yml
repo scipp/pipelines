@@ -18,8 +18,10 @@ parameters:
   type: string
   default: ''
 - name: conda_channels
-  type: string
-  default: ''
+  type: object
+  default:
+    main: ''
+    next: ''
 - name: verbose
   type: boolean
   default: false
@@ -90,7 +92,7 @@ jobs:
       - bash: |
           set -ex
           conda build $VERBOSE_OPTION \
-            --channel conda-forge ${{ parameters.conda_channels }} \
+            --channel conda-forge ${{ parameters.conda_channels['System.PullRequest.TargetBranch'] }} \
             --python=${{ parameters.py_version }} --no-anaconda-upload conda \
             --override-channels
         displayName: 'Python tests and conda build'
