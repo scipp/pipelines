@@ -88,6 +88,11 @@ jobs:
           displayName: 'Activate conda build debug mode'
 
       - bash: |
+          echo "${{ parameters.conda_channels.key }}"
+          echo "$(System.PullRequest.TargetBranch)"
+        displayName: 'Print key'
+
+      - bash: |
           set -ex
           conda build $VERBOSE_OPTION \
             --channel conda-forge ${{ parameters.conda_channels[parameters.conda_channels.key] }} \
