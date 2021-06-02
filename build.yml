@@ -93,7 +93,7 @@ jobs:
           echo "3: ${{ parameters.conda_channels[parameters.conda_channels.key] }}"
           echo "4: ${{ parameters.conda_channels['parameters.conda_channels.key'] }}"
           echo "##vso[task.setvariable variable=conda_key]${{ parameters.conda_channels.key }}"
-          echo "5: ${{ parameters.conda_channels[$CONDA_KEY] }}"
+          echo "5: $CONDA_KEY"
           echo "6: ${{ parameters.conda_channels[variables.conda_key] }}"
         displayName: 'Print key'
 
