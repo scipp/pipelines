@@ -90,7 +90,7 @@ jobs:
       - bash: |
           set -ex
           conda build $VERBOSE_OPTION \
-            --channel conda-forge ${{ parameters.conda_channels[${{ parameters.conda_channels.key] }} \
+            --channel conda-forge ${{ parameters.conda_channels[parameters.conda_channels.key] }} \
             --python=${{ parameters.py_version }} --no-anaconda-upload conda \
             --override-channels
         displayName: 'Python tests and conda build'
