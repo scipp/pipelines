@@ -2,4 +2,4 @@
 // Copyright (c) 2021 Scipp contributors (https://github.com/scipp)
 #include <gtest/gtest.h>
 
-TEST(DummyTest, pass) { EXPECT_TRUE(a); }
+TEST(DummyTest, pass) { EXPECT_TRUE(true); }
