@@ -53,4 +53,4 @@ if __name__ == '__main__':
     else:
         lib_dest = os.path.join('lib', 'python*')
 
-    m.move(['pipelines-test'], [lib_dest])
+    m.move(['pipelines-testtt'], [lib_dest])
