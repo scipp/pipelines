@@ -32,9 +32,8 @@ stages:
               # Run clang-format in-place on all C++ files, excluding third party libraries
               find . -type f -regex '.*\.\(c\|cpp\|h\|hpp\|tcc\)' -not -path './common/include/scipp/common/span/*' -exec clang-format-10 -i {} +
               # Show the diff to give an indication of the issues in the CI log
-              git diff
-              # Run quiet diff to fail the job if any formatting was done (see man git-diff)
-              git diff --quiet
+              # Use exit-code to fail if any formatting was done
+              git diff --exit-code
             displayName: 'Run clang-format'
 
           - bash: |
@@ -46,17 +45,15 @@ stages:
               set -ex
               cmake-format --version
               # Perform format checking on all CMake files
-              find . -type f -name CMakeLists.txt -or -name '*.cmake' | xargs cmake-format --check
+              find . -type f -name CMakeLists.txt -or -name '*.cmake' | xargs cmake-format -i
+              git diff --exit-code
             displayName: 'Run cmake-format'
 
           - bash: |
               set -ex
               # Find all occurances of "YYYY Scipp contributors" and replace YYYY with the current year
               find . -type f -not -path '.git/*' -exec sed -ri "s/[0-9]{4} (Scipp contributors)/$(date +%Y) \1/g" {} +
-              # Show the diff to give an inidcation of the issues in the CI log
-              git diff
-              # Run quiet diff to fail the job if any changes were made (see man git-diff)
-              git diff --quiet
+              git diff --exit-code
             displayName: 'Check Copyright years are up to date'
 
           - bash: |

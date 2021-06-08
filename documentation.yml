@@ -56,12 +56,7 @@ stages:
               set -ex
               cd docs
               source activate tempenv
-              # If a docs preparation file exists, run it (e.g. fetch data files)
-              if test -f ../tools/pre_docs.sh; then
-                  ../tools/pre_docs.sh;
-              fi
-              # Build documentation, redirecting doctrees to avoid size bloat
-              sphinx-build -d "$(mktemp -d)" . "$(docs_build_dir)"
+              python make_docs.py --prefix=$(docs_build_dir) --work_dir=$(mktemp -d)
               # Remove Jupyter notebooks used for documentation build,
               # they are not accessible and create size bloat
               find "$(docs_build_dir)" -type f -name *.ipynb -delete
