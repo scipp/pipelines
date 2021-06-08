@@ -95,14 +95,11 @@ def main(prefix='install', build_dir='build', source_dir='.'):
     # Show cmake settings
     run_command(['cmake', '-B', '.', '-S', source_dir, '-LA'], shell=shell)
 
-    # Compile C++ tests
-    run_command(['cmake', '--build', '.', '--target', 'pipelines-test'] +
-                build_flags,
-                shell=shell)
-
-    # Compile Python library
-    run_command(['cmake', '--build', '.', '--target', 'install'] + build_flags,
-                shell=shell)
+    # Compile C++ tests and python library
+    for target in ['pipelines-tests', 'install']:
+        run_command(['cmake', '--build', '.', '--target', target] +
+                    build_flags,
+                    shell=shell)
 
     # Run C++ tests
     run_command([os.path.join('.', build_config, 'pipelines-test')],
