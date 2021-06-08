@@ -96,7 +96,7 @@ def main(prefix='install', build_dir='build', source_dir='.'):
     run_command(['cmake', '-B', '.', '-S', source_dir, '-LA'], shell=shell)
 
     # Compile C++ tests and python library
-    for target in ['pipelines-tests', 'install']:
+    for target in ['pipelines-test', 'install']:
         run_command(['cmake', '--build', '.', '--target', target] +
                     build_flags,
                     shell=shell)
