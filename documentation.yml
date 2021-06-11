@@ -56,11 +56,17 @@ stages:
               set -ex
               cd docs
               source activate tempenv
-              python make_docs.py --prefix=$(docs_build_dir) --work_dir=$(mktemp -d)
+              python build_docs.py --builder=html --prefix=$(docs_build_dir) --work_dir=$(mktemp -d)
               # Remove Jupyter notebooks used for documentation build,
               # they are not accessible and create size bloat
               find "$(docs_build_dir)" -type f -name *.ipynb -delete
             displayName: 'Build documentation'
+          - bash: |
+              set -ex
+              cd docs
+              source activate tempenv
+              python build_docs.py --builder=doctest --prefix=$(docs_build_dir) --work_dir=$(mktemp -d)
+            displayName: 'Run doctest'
           - task: PublishBuildArtifacts@1
             inputs:
               PathtoPublish: '$(docs_build_dir)'

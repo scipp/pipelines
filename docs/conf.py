@@ -6,6 +6,10 @@ html_show_sourcelink = True
 
 # -- General configuration ------------------------------------------------
 
+extensions = [
+    'sphinx.ext.doctest',
+]
+
 # If your documentation needs a minimal Sphinx version, state it here.
 #
 # needs_sphinx = '1.0'
