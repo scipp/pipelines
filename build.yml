@@ -101,8 +101,10 @@ jobs:
           set -ex
           conda build $VERBOSE_OPTION \
             --channel conda-forge ${{ parameters.conda_channels }} \
-            --python=${{ parameters.py_version }} --no-anaconda-upload conda \
-            --override-channels
+            --python=${{ parameters.py_version }} \
+            --no-anaconda-upload \
+            --override-channels \
+            conda
         displayName: 'Python tests and conda build'
 
       - task: PublishBuildArtifacts@1
