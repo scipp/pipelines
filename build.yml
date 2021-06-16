@@ -75,10 +75,17 @@ jobs:
         displayName: 'Create conda environment'
 
       - bash: |
+          if [ test -f tools/build_cpp.py ]; then
+             echo "##vso[task.setvariable variable=fileExists]true"
+          fi
+        displayName: 'Check for existence of cpp build file'
+
+      - bash: |
           set -ex
           source activate tempenv
           python tools/build_cpp.py --prefix=$SCIPP_INSTALL_PREFIX
         displayName: 'Build and run C++ tests'
+        condition: eq(variables['fileExists'], 'true')
 
       - ${{ if eq(parameters.verbose, true) }}:
         - bash: |
