@@ -46,7 +46,9 @@ stages:
               # Specify python version in env file
               sed 's/- python$/- python=${{ parameters.py_version }}/g' ${{ parameters.conda_env }} > tempenv0.yml
               # Strip build dependencies
+              cat tempenv0.yml
               sed -e '/# Build/,/^$/d' tempenv0.yml > tempenv.yml
+              cat tempenv.yml
               conda env create -f tempenv.yml -n tempenv
             displayName: 'Create Conda environment'
           - bash: |
