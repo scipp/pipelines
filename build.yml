@@ -75,12 +75,14 @@ jobs:
           sed -e '/# Run/,/^$/d' tempenv0.yml > tempenv1.yml
           # Ignore docs dependencies for building
           sed -e '/# Docs/,/^$/d' tempenv1.yml > tempenv.yml
+          cat tempenv.yml
           conda env create -f tempenv.yml -n tempenv
         displayName: 'Create conda environment'
 
       - bash: |
           set -ex
           source activate tempenv
+          conda list
           python tools/build_cpp.py --prefix=$SCIPP_INSTALL_PREFIX
         displayName: 'Build and run C++ tests'
 

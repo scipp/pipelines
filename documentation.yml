@@ -46,7 +46,6 @@ stages:
               # Specify python version in env file
               sed 's/- python$/- python=${{ parameters.py_version }}/g' ${{ parameters.conda_env }} > tempenv0.yml
               # Strip build dependencies
-              cat tempenv0.yml
               sed -e '/# Build/,/^$/d' tempenv0.yml > tempenv.yml
               cat tempenv.yml
               conda env create -f tempenv.yml -n tempenv
@@ -54,10 +53,8 @@ stages:
           - bash: |
               set -ex
               source activate tempenv
-              conda list
-              conda install -c conda-forge conda-tree --yes
-              conda-tree whoneeds boost
               conda install "$(packages_dir)/$(package_name)/"*.tar.bz2
+              conda list
             displayName: 'Install previously built conda package'
           - bash: |
               set -ex
