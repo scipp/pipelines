@@ -54,6 +54,7 @@ stages:
           - bash: |
               set -ex
               source activate tempenv
+              conda list
               conda install -c conda-forge conda-tree --yes
               conda-tree whoneeds boost
               conda install "$(packages_dir)/$(package_name)/"*.tar.bz2
