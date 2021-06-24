@@ -70,7 +70,11 @@ jobs:
           conda install --yes conda-build
           conda config --set always_yes yes --set changeps1 no
           # Specify env name and python version in env file
-          sed 's/- python$/- python=${{ parameters.py_version }}/g' ${{ parameters.conda_env }} > tempenv.yml
+          sed 's/- python$/- python=${{ parameters.py_version }}/g' ${{ parameters.conda_env }} > tempenv0.yml
+          # Ignore run dependencies for building
+          sed -e '/# Run/,/^$/d' tempenv0.yml > tempenv1.yml
+          # Ignore docs dependencies for building
+          sed -e '/# Docs/,/^$/d' tempenv1.yml > tempenv.yml
           conda env create -f tempenv.yml -n tempenv
         displayName: 'Create conda environment'
 
