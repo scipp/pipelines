@@ -67,7 +67,7 @@ stages:
               ${{ each param in parameters.settings[os.Key].params }}:
                 ${{ param.Key }}: ${{ param.Value }}
 
-  - stage: 'documentation'
+  - stage: 'documentation_noarch'
     condition: not(eq(length('${{ parameters.config.noarch }}'), 0))
     displayName: 'Documentation'
     jobs:
@@ -78,7 +78,7 @@ stages:
           conda_env: ${{ parameters.config.noarch.conda_env }}
           py_version: '3.7'
 
-  - stage: 'documentation'
+  - stage: 'documentation_linux'
     condition: eq(length('${{ parameters.config.noarch }}'), 0)
     displayName: 'Documentation'
     jobs:
