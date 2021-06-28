@@ -73,7 +73,7 @@ jobs:
 
       - bash: |
           if [ test -f tools/build_cpp.py ]; then
-             echo "##vso[task.setvariable variable=fileExists]true"
+             echo "##vso[task.setvariable variable=buildcppfileexists]true"
           fi
         displayName: 'Check for existence of cpp build file'
 
@@ -83,14 +83,14 @@ jobs:
           sed 's/- python$/- python=${{ parameters.py_version }}/g' ${{ parameters.conda_env }} > tempenv.yml
           conda env create -f tempenv.yml -n tempenv
         displayName: 'Create conda environment'
-        condition: eq(variables['fileExists'], 'true')
+        condition: eq(variables['buildcppfileexists'], 'true')
 
       - bash: |
           set -ex
           source activate tempenv
           python tools/build_cpp.py --prefix=$SCIPP_INSTALL_PREFIX
         displayName: 'Build and run C++ tests'
-        condition: eq(variables['fileExists'], 'true')
+        condition: eq(variables['buildcppfileexists'], 'true')
 
       - ${{ if eq(parameters.verbose, true) }}:
         - bash: |
