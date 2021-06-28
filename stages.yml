@@ -68,7 +68,7 @@ stages:
                 ${{ param.Key }}: ${{ param.Value }}
 
   - stage: 'documentation'
-    condition: not(eq(length(parameters.config.noarch), 0))
+    condition: not(eq(length(${{ parameters.config.noarch }}), 0))
     displayName: 'Documentation'
     jobs:
       - template: documentation.yml
@@ -79,7 +79,7 @@ stages:
           py_version: '3.7'
 
   - stage: 'documentation'
-    condition: eq(length(parameters.config.noarch), 0)
+    condition: eq(length(${{ parameters.config.noarch }}), 0)
     displayName: 'Documentation'
     jobs:
       - template: documentation.yml
