@@ -72,7 +72,7 @@ jobs:
         displayName: 'Install conda-build'
 
       - bash: |
-          if [ test -f tools/build_cpp.py ]; then
+          if test -f tools/build_cpp.py; then
              echo "##vso[task.setvariable variable=buildcppfileexists]true"
           fi
         displayName: 'Check for existence of cpp build file'
