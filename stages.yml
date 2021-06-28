@@ -70,7 +70,7 @@ stages:
   - stage: 'documentation'
     condition: not(eq(length(parameters.config.noarch), 0))
     displayName: 'Documentation'
-      jobs:
+    jobs:
       - template: documentation.yml
         parameters:
           image: ${{ parameters.settings.noarch.image }}
@@ -81,7 +81,7 @@ stages:
   - stage: 'documentation'
     condition: eq(length(parameters.config.noarch), 0)
     displayName: 'Documentation'
-      jobs:
+    jobs:
       - template: documentation.yml
         parameters:
           image: ${{ parameters.settings.linux.image }}
