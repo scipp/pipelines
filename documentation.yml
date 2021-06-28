@@ -11,64 +11,60 @@ parameters:
   type: string
   default: ''
 
-stages:
-  - stage: 'documentation'
-    displayName: 'Documentation'
-
-    jobs:
-      - job: 'documentation_build'
-        displayName: 'Documentation build'
-        pool:
-          vmImage: ${{ parameters.image }}
-        variables:
-          packages_dir: '$(Build.StagingDirectory)/packages'
-          docs_build_dir: '$(Build.StagingDirectory)/docs_build'
-          package_name: ${{ parameters.conda_package_root }}-py${{ parameters.py_version }}
-        steps:
-          - bash: |
-              set -ex
-              mkdir -p "$(packages_dir)"
-              mkdir -p "$(docs_build_dir)"
-            displayName: 'Make directories'
-          - task: DownloadBuildArtifacts@0
-            inputs:
-              buildType: 'current'
-              specificBuildWithTriggering: true
-              downloadType: 'single'
-              artifactName: '$(package_name)'
-              downloadPath: '$(packages_dir)'
-            displayName: 'Download previously built conda package'
-          - bash: |
-              echo "##vso[task.prependpath]$CONDA/bin"
-            displayName: Add Conda to PATH
-          - bash: |
-              set -ex
-              # Specify python version in env file
-              sed 's/- python$/- python=${{ parameters.py_version }}/g' ${{ parameters.conda_env }} > tempenv.yml
-              conda env create -f tempenv.yml -n tempenv
-            displayName: 'Create Conda environment'
-          - bash: |
-              set -ex
-              source activate tempenv
-              conda install "$(packages_dir)/$(package_name)/"*.tar.bz2
-            displayName: 'Install previously built conda package'
-          - bash: |
-              set -ex
-              cd docs
-              source activate tempenv
-              python build_docs.py --builder=html --prefix=$(docs_build_dir) --work_dir=$(mktemp -d)
-              # Remove Jupyter notebooks used for documentation build,
-              # they are not accessible and create size bloat
-              find "$(docs_build_dir)" -type f -name *.ipynb -delete
-            displayName: 'Build documentation'
-          - bash: |
-              set -ex
-              cd docs
-              source activate tempenv
-              python build_docs.py --builder=doctest --prefix=$(docs_build_dir) --work_dir=$(mktemp -d)
-            displayName: 'Run doctest'
-          - task: PublishBuildArtifacts@1
-            inputs:
-              PathtoPublish: '$(docs_build_dir)'
-              ArtifactName: 'documentation'
-            displayName: 'Publish documentation artifacts'
+jobs:
+  - job: 'documentation_build'
+    displayName: 'Documentation build'
+    pool:
+      vmImage: ${{ parameters.image }}
+    variables:
+      packages_dir: '$(Build.StagingDirectory)/packages'
+      docs_build_dir: '$(Build.StagingDirectory)/docs_build'
+      package_name: ${{ parameters.conda_package_root }}-py${{ parameters.py_version }}
+    steps:
+      - bash: |
+          set -ex
+          mkdir -p "$(packages_dir)"
+          mkdir -p "$(docs_build_dir)"
+        displayName: 'Make directories'
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          specificBuildWithTriggering: true
+          downloadType: 'single'
+          artifactName: '$(package_name)'
+          downloadPath: '$(packages_dir)'
+        displayName: 'Download previously built conda package'
+      - bash: |
+          echo "##vso[task.prependpath]$CONDA/bin"
+        displayName: Add Conda to PATH
+      - bash: |
+          set -ex
+          # Specify python version in env file
+          sed 's/- python$/- python=${{ parameters.py_version }}/g' ${{ parameters.conda_env }} > tempenv.yml
+          conda env create -f tempenv.yml -n tempenv
+        displayName: 'Create Conda environment'
+      - bash: |
+          set -ex
+          source activate tempenv
+          conda install "$(packages_dir)/$(package_name)/"*.tar.bz2
+        displayName: 'Install previously built conda package'
+      - bash: |
+          set -ex
+          cd docs
+          source activate tempenv
+          python build_docs.py --builder=html --prefix=$(docs_build_dir) --work_dir=$(mktemp -d)
+          # Remove Jupyter notebooks used for documentation build,
+          # they are not accessible and create size bloat
+          find "$(docs_build_dir)" -type f -name *.ipynb -delete
+        displayName: 'Build documentation'
+      - bash: |
+          set -ex
+          cd docs
+          source activate tempenv
+          python build_docs.py --builder=doctest --prefix=$(docs_build_dir) --work_dir=$(mktemp -d)
+        displayName: 'Run doctest'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(docs_build_dir)'
+          ArtifactName: 'documentation'
+        displayName: 'Publish documentation artifacts'

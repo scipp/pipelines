@@ -67,21 +67,27 @@ stages:
               ${{ each param in parameters.settings[os.Key].params }}:
                 ${{ param.Key }}: ${{ param.Value }}
 
-  - template: documentation.yml
-    parameters:
-      image: ${{ parameters.settings.noarch.image }}
-      conda_package_root: ${{ parameters.settings.noarch.conda_package_root }}
-      conda_env: ${{ parameters.config.noarch.conda_env }}
-      py_version: '3.7'
-    condition: not(eq(length(parameters.config.noarch), 0))
+- stage: 'documentation'
+  condition: not(eq(length(parameters.config.noarch), 0))
+  displayName: 'Documentation'
+    jobs:
+    - template: documentation.yml
+      parameters:
+        image: ${{ parameters.settings.noarch.image }}
+        conda_package_root: ${{ parameters.settings.noarch.conda_package_root }}
+        conda_env: ${{ parameters.config.noarch.conda_env }}
+        py_version: '3.7'
 
-  - template: documentation.yml
-    parameters:
-      image: ${{ parameters.settings.linux.image }}
-      conda_package_root: ${{ parameters.settings.linux.conda_package_root }}
-      conda_env: ${{ parameters.config.linux.conda_env }}
-      py_version: '3.7'
-    condition: eq(length(parameters.config.noarch), 0)
+- stage: 'documentation'
+  condition: eq(length(parameters.config.noarch), 0)
+  displayName: 'Documentation'
+    jobs:
+    - template: documentation.yml
+      parameters:
+        image: ${{ parameters.settings.linux.image }}
+        conda_package_root: ${{ parameters.settings.linux.conda_package_root }}
+        conda_env: ${{ parameters.config.linux.conda_env }}
+        py_version: '3.7'
 
   - ${{ if eq(parameters.deploy, true) }}:
     - template: deploy.yml
