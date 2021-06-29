@@ -105,13 +105,13 @@ jobs:
           then
             conda build $VERBOSE_OPTION \
               --channel conda-forge ${{ parameters.conda_channels }} \
-              --no-anaconda-upload conda \
+              --no-anaconda-upload \
               --override-channels \
               conda
           else
             conda build $VERBOSE_OPTION \
               --channel conda-forge ${{ parameters.conda_channels }} \
-              --no-anaconda-upload conda \
+              --no-anaconda-upload \
               --override-channels \
               --python=${{ parameters.py_version }} \
               conda
