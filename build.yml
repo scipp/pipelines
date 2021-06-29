@@ -106,7 +106,7 @@ jobs:
             conda build $VERBOSE_OPTION \
               --channel conda-forge ${{ parameters.conda_channels }} \
               --no-anaconda-upload conda \
-              --override-channels
+              --override-channels \
               --python=${{ parameters.py_version }} \
               --no-anaconda-upload \
               --override-channels \
@@ -116,7 +116,7 @@ jobs:
               --channel conda-forge ${{ parameters.conda_channels }} \
               --python=${{ parameters.py_version }} \
               --no-anaconda-upload conda \
-              --override-channels
+              --override-channels \
               --python=${{ parameters.py_version }} \
               --no-anaconda-upload \
               --override-channels \
