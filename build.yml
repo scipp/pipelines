@@ -99,12 +99,29 @@ jobs:
 
       - bash: |
           set -ex
-          conda build $VERBOSE_OPTION \
-            --channel conda-forge ${{ parameters.conda_channels }} \
-            --python=${{ parameters.py_version }} \
-            --no-anaconda-upload \
-            --override-channels \
-            conda
+
+
+          if [[ ${{ parameters.conda_package_root }} == "noarch" ]]
+          then
+            conda build $VERBOSE_OPTION \
+              --channel conda-forge ${{ parameters.conda_channels }} \
+              --no-anaconda-upload conda \
+              --override-channels
+              --python=${{ parameters.py_version }} \
+              --no-anaconda-upload \
+              --override-channels \
+              conda
+          else
+            conda build $VERBOSE_OPTION \
+              --channel conda-forge ${{ parameters.conda_channels }} \
+              --python=${{ parameters.py_version }} \
+              --no-anaconda-upload conda \
+              --override-channels
+              --python=${{ parameters.py_version }} \
+              --no-anaconda-upload \
+              --override-channels \
+              conda
+          fi
         displayName: 'Python tests and conda build'
 
       - task: PublishBuildArtifacts@1
