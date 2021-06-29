@@ -49,19 +49,16 @@ jobs:
       # Note that using set -ex when setting vso variables messes up paths
       - ${{ if contains(parameters.image, 'windows') }}:
         - bash: |
-            set -ex
             echo "##vso[task.prependpath]$CONDA\Scripts"
             echo "##vso[task.setvariable variable=scipp_install_prefix]$CONDA\scipp_install"
           displayName: 'Configure Conda path'
       - ${{ if not(contains(parameters.image, 'windows')) }}:
         - bash: |
-            set -ex
             echo "##vso[task.prependpath]$CONDA/bin"
             echo "##vso[task.setvariable variable=scipp_install_prefix]$CONDA/scipp_install"
           displayName: 'Configure Conda path'
 
       - bash: |
-          set -ex
           echo "##vso[task.setvariable variable=conda_dir]$CONDA"
         displayName: 'Configure Conda dir'
       - ${{ if not(eq(length(parameters.OSX_VERSION), 0)) }}:
@@ -78,7 +75,6 @@ jobs:
         displayName: 'Install conda-build'
 
       - bash: |
-          set -ex
           if test -f tools/build_cpp.py; then
              echo "##vso[task.setvariable variable=buildcppfileexists]true"
           fi
@@ -101,20 +97,17 @@ jobs:
 
       - ${{ if eq(parameters.verbose, true) }}:
         - bash: |
-            set -ex
             echo "##vso[task.setvariable variable=verbose_option]--debug"
           displayName: 'Activate conda build debug mode'
 
       - ${{ if eq(parameters.noarch, false) }}:
         - bash: |
-            set -ex
             echo "##vso[task.setvariable variable=pin_python_version]--python=${{ parameters.py_version }}"
             echo "##vso[task.setvariable variable=conda_package_folder]${{ parameters.conda_package_root }}"
           displayName: 'Pin python version and set package folder'
 
       - ${{ if eq(parameters.noarch, true) }}:
         - bash: |
-            set -ex
             echo "##vso[task.setvariable variable=conda_package_folder]noarch"
           displayName: 'Set package folder'
 

@@ -39,7 +39,6 @@ stages:
               downloadPath: '$(packages_dir)'
             displayName: 'Download previously built conda package'
           - bash: |
-              set -ex
               echo "##vso[task.prependpath]$CONDA/bin"
             displayName: Add Conda to PATH
           - bash: |
