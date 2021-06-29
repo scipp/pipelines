@@ -23,6 +23,9 @@ parameters:
 - name: verbose
   type: boolean
   default: false
+- name: noarch
+  type: boolean
+  default: false
 
 jobs:
   - job:
@@ -97,30 +100,30 @@ jobs:
             echo "##vso[task.setvariable variable=verbose_option]--debug"
           displayName: 'Activate conda build debug mode'
 
+      - ${{ if eq(parameters.noarch, false) }}:
+        - bash: |
+            echo "##vso[task.setvariable variable=pin_python_version]--python=${{ parameters.py_version }}"
+            echo "##vso[task.setvariable variable=conda_package_folder]${{ parameters.conda_package_root }}"
+          displayName: 'Pin python version and set package folder'
+
+      - ${{ if eq(parameters.noarch, true) }}:
+        - bash: |
+            echo "##vso[task.setvariable variable=conda_package_folder]noarch"
+          displayName: 'Set package folder'
+
       - bash: |
           set -ex
-
-
-          if [[ ${{ parameters.conda_package_root }} == "noarch" ]]
-          then
-            conda build $VERBOSE_OPTION \
-              --channel conda-forge ${{ parameters.conda_channels }} \
-              --no-anaconda-upload \
-              --override-channels \
-              conda
-          else
-            conda build $VERBOSE_OPTION \
-              --channel conda-forge ${{ parameters.conda_channels }} \
-              --no-anaconda-upload \
-              --override-channels \
-              --python=${{ parameters.py_version }} \
-              conda
-          fi
+          conda build $VERBOSE_OPTION \
+            --channel conda-forge ${{ parameters.conda_channels }} \
+            --no-anaconda-upload \
+            --override-channels \
+            $PIN_PYTHON_VERSION \
+            conda
         displayName: 'Python tests and conda build'
 
       - task: PublishBuildArtifacts@1
         inputs:
-          PathtoPublish: "$(conda_dir)/conda-bld/${{ parameters.conda_package_root }}"
+          PathtoPublish: "$(conda_dir)/conda-bld/$CONDA_PACKAGE_FOLDER"
           ArtifactName: "${{ parameters.conda_package_root }}-py${{ parameters.py_version }}"
         displayName: 'Archive Conda package artifacts'
 

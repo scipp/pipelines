@@ -15,9 +15,6 @@ parameters:
     windows:
       image: 'windows-latest'
       conda_package_root: 'win-64'
-    noarch:
-      image: 'ubuntu-20.04'
-      conda_package_root: 'noarch'
 - name: config
   type: object
   default: []
@@ -45,6 +42,9 @@ parameters:
 - name: publish_docs
   type: boolean
   default: true
+- name: noarch
+  type: boolean
+  default: false
 
 stages:
   - template: code_quality_checks.yml
@@ -64,30 +64,16 @@ stages:
               conda_package_root: ${{ parameters.settings[os.Key].conda_package_root }}
               conda_env: ${{ os.Value.conda_env }}
               conda_channels: ${{ parameters.conda_channels }}
+              noarch: ${{ parameters.noarch }}
               ${{ each param in parameters.settings[os.Key].params }}:
                 ${{ param.Key }}: ${{ param.Value }}
 
-  - stage: 'documentation_noarch'
-    condition: not(eq(length('${{ parameters.config.noarch }}'), 0))
-    displayName: 'Documentation'
-    jobs:
-      - template: documentation.yml
-        parameters:
-          image: ${{ parameters.settings.noarch.image }}
-          conda_package_root: ${{ parameters.settings.noarch.conda_package_root }}
-          conda_env: ${{ parameters.config.noarch.conda_env }}
-          py_version: '3.7'
-
-  - stage: 'documentation_linux'
-    condition: eq(length('${{ parameters.config.noarch }}'), 0)
-    displayName: 'Documentation'
-    jobs:
-      - template: documentation.yml
-        parameters:
-          image: ${{ parameters.settings.linux.image }}
-          conda_package_root: ${{ parameters.settings.linux.conda_package_root }}
-          conda_env: ${{ parameters.config.linux.conda_env }}
-          py_version: '3.7'
+  - template: documentation.yml
+    parameters:
+      image: ${{ parameters.settings.linux.image }}
+      conda_package_root: ${{ parameters.settings.linux.conda_package_root }}
+      conda_env: ${{ parameters.config.linux.conda_env }}
+      py_version: '3.7'
 
   - ${{ if eq(parameters.deploy, true) }}:
     - template: deploy.yml
