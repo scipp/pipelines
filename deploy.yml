@@ -35,6 +35,7 @@ stages:
             value: '$(Build.StagingDirectory)/git'
         steps:
           - bash: |
+              set -ex
               echo "##vso[task.prependpath]$CONDA/bin"
               echo "##vso[task.setvariable variable=conda_dir]$CONDA"
             displayName: 'Configure Conda'
@@ -54,6 +55,7 @@ stages:
                 downloadPath: '$(Build.StagingDirectory)/packages'
               displayName: 'Retrieve built conda package'
             - bash: |
+                set -ex
                 anaconda --token "$ANACONDA_TOKEN" upload --user scipp --label ${{ parameters.conda_label }} '$(Build.StagingDirectory)/packages/${{ package.Key }}/'*.tar.bz2 --force
               env:
                 ANACONDA_TOKEN: $(anaconda_token_secret)
