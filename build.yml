@@ -101,7 +101,7 @@ jobs:
           displayName: 'Activate conda build debug mode'
 
       - bash: |
-          if ${{ parameters.noarch }}; then
+          if [ '${{ parameters.noarch }}' == 'True' ]; then
             echo "##vso[task.setvariable variable=conda_package_folder]noarch"
           else
             echo "##vso[task.setvariable variable=conda_package_folder]${{ parameters.conda_package_root }}"
