@@ -100,24 +100,21 @@ jobs:
             echo "##vso[task.setvariable variable=verbose_option]--debug"
           displayName: 'Activate conda build debug mode'
 
-      - ${{ if eq(parameters.noarch, false) }}:
-        - bash: |
-            echo "##vso[task.setvariable variable=pin_python_version]--python=${{ parameters.py_version }}"
-            echo "##vso[task.setvariable variable=conda_package_folder]${{ parameters.conda_package_root }}"
-          displayName: 'Pin python version and set package folder'
-
-      - ${{ if eq(parameters.noarch, true) }}:
-        - bash: |
+      - bash: |
+          if ${{ parameters.noarch }}; then
             echo "##vso[task.setvariable variable=conda_package_folder]noarch"
-          displayName: 'Set package folder'
+          else
+            echo "##vso[task.setvariable variable=conda_package_folder]${{ parameters.conda_package_root }}"
+          fi
+        displayName: 'Set package folder'
 
       - bash: |
           set -ex
           conda build $VERBOSE_OPTION \
             --channel conda-forge ${{ parameters.conda_channels }} \
+            --python=${{ parameters.py_version }} \
             --no-anaconda-upload \
             --override-channels \
-            $PIN_PYTHON_VERSION \
             conda
         displayName: 'Python tests and conda build'
 
