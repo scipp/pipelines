@@ -67,11 +67,11 @@ jobs:
       - bash: |
           set -ex
           conda --version
-          conda install --yes conda-build
-          conda config --set always_yes yes --set changeps1 no
+          conda install --yes -c conda-forge conda-build mamba
+          conda config --set changeps1 no
           # Specify env name and python version in env file
           sed 's/- python$/- python=${{ parameters.py_version }}/g' ${{ parameters.conda_env }} > tempenv.yml
-          conda env create -f tempenv.yml -n tempenv
+          mamba env create -f tempenv.yml -n tempenv
         displayName: 'Create conda environment'
 
       - bash: |
