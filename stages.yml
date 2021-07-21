@@ -42,6 +42,9 @@ parameters:
 - name: publish_docs
   type: boolean
   default: true
+- name: build_type
+  type: string
+  default: release
 
 stages:
   - template: code_quality_checks.yml
