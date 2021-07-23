@@ -59,6 +59,7 @@ stages:
           - template: build.yml
             parameters:
               verbose: ${{ parameters.verbose }}
+              build_type: ${{ parameters.build_type }}
               py_version: ${{ py }}
               image: ${{ parameters.settings[os.Key].image }}
               conda_package_root: ${{ parameters.settings[os.Key].conda_package_root }}
