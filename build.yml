@@ -111,7 +111,7 @@ jobs:
 
       - bash: |
           set -ex
-          conda build $VERBOSE_OPTION \
+          conda mambabuild $VERBOSE_OPTION \
             --channel conda-forge ${{ parameters.conda_channels }} \
             $SET_PYTHON_VERSION \
             --no-anaconda-upload \
