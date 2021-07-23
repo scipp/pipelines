@@ -70,7 +70,7 @@ jobs:
       - bash: |
           set -ex
           conda --version
-          conda install --yes -c conda-forge conda-build mamba
+          conda install --yes -c conda-forge conda-build mamba boa
           conda config --set changeps1 no
         displayName: 'Install conda-build'
 
