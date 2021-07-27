@@ -1,0 +1,29 @@
+steps:
+  - bash: |
+      set -ex
+      source activate tempenv
+      # Set location for clcache directory
+      echo "##vso[task.setvariable variable=clcache_dir]$(Pipeline.Workspace)\\clcache"
+    displayName: 'configure clcache'
+  - task: Cache@2
+    inputs:
+      key: 'clcache | "$(Agent.OS)" | "$(Build.SourceVersion)"'
+      restoreKeys: |
+        clcache | "$(Agent.OS)" | "$(Build.SourceVersion)"
+        clcache | "$(Agent.OS)"
+      path: "$(CLCACHE_DIR)"
+    displayName: 'Process clcache'
+  - bash: |
+      set -ex
+      source activate tempenv
+      # Get stats
+      clcache.exe -s
+      # Clean/maintain cache 
+      clcache.exe -c
+    displayName: 'Trim clcache settings'
+  - bash: |
+      set -ex
+      source activate tempenv
+      # Get stats
+      clcache.exe -s 
+    displayName: 'Report clcache statistics'
