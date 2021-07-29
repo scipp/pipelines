@@ -17,6 +17,8 @@ steps:
   - bash: |
       set -ex
       source activate tempenv
+      # Clear stats inc previous hits
+      clcache.exe -z
       # Get stats
       clcache.exe -s
       # Clean/maintain cache 
