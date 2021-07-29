@@ -23,6 +23,7 @@ steps:
       clcache.exe -s
       # Clean/maintain cache 
       clcache.exe -c
+      which cl.exe
     displayName: 'Trim clcache settings'
   - bash: |
       set -ex
