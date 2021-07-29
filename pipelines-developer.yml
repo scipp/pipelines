@@ -8,8 +8,6 @@ dependencies:
   # Build
   - ninja
   - pip
-  - pip:
-    - clcache
 
   # Run
   - python
