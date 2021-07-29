@@ -97,10 +97,9 @@ jobs:
           set -ex
           source activate tempenv
           if [ '${{ parameters.clcache }}' == 'True' ]; then
-            python tools/build_cpp.py --prefix=$SCIPP_INSTALL_PREFIX --caching
-          else
-            python tools/build_cpp.py --prefix=$SCIPP_INSTALL_PREFIX
+            flags="--caching"
           fi
+          python tools/build_cpp.py --prefix=$SCIPP_INSTALL_PREFIX $flags
         displayName: 'Build and run C++ tests'
         condition: eq(variables['buildcppfileexists'], 'true')
 
