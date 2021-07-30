@@ -14,10 +14,10 @@ steps:
     displayName: 'Install and configure clcache'
   - task: Cache@2
     inputs:
-      key: 'clcache | "$(Agent.OS)" | "$(Build.SourceVersion)"'
+      key: 'clcache | v2 | "$(Agent.OS)" | "$(Build.SourceVersion)"'
       restoreKeys: |
-        clcache | "$(Agent.OS)" | "$(Build.SourceVersion)"
-        clcache | "$(Agent.OS)"
+        clcache | "v2" | "$(Agent.OS)" | "$(Build.SourceVersion)"
+        clcache | "v2" | "$(Agent.OS)"
       path: "$(CLCACHE_DIR)"
     displayName: 'Process clcache'
   - bash: |
