@@ -16,7 +16,7 @@ parameters:
       image: 'windows-latest'
       conda_package_root: 'win-64'
       params:
-        clcache: true
+        clcache: false
 - name: config
   type: object
   default: []
