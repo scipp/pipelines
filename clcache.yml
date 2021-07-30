@@ -7,7 +7,7 @@ steps:
       echo "##vso[task.setvariable variable=clcache_dir]$(Pipeline.Workspace)\\clcache"
       # Set logging information
       echo "##vso[task.setvariable variable=clcache_log]true"
-      echo 'cache_log' $cache_log
+      echo "##vso[task.setvariable variable=clcache_nodirect]true"
     displayName: 'Install and configure clcache'
   - task: Cache@2
     inputs:
