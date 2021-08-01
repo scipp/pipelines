@@ -8,9 +8,6 @@ steps:
       python setup.py install
       # Set location for clcache directory
       echo "##vso[task.setvariable variable=clcache_dir]$(Pipeline.Workspace)\\clcache"
-      # Set logging information
-      echo "##vso[task.setvariable variable=clcache_log]true"
-      echo 'cache_log' $cache_log
     displayName: 'Install and configure clcache'
   - task: Cache@2
     inputs:
@@ -27,7 +24,7 @@ steps:
       clcache.exe -z
       # Set maximum cache size
       clcache.exe -M 4000000000
-    displayName: 'Trim clcache settings'
+    displayName: 'Configure clcache settings'
   - bash: |
       set -ex
       source activate tempenv
