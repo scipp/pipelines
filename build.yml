@@ -86,6 +86,7 @@ jobs:
           set -ex
           # Specify python version in env file
           sed 's/- python$/- python=${{ parameters.py_version }}/g' ${{ parameters.conda_env }} > tempenv.yml
+          conda list
           mamba env create -f tempenv.yml -n tempenv
         displayName: 'Create conda environment'
         condition: eq(variables['buildcppfileexists'], 'true')
