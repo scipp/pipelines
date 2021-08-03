@@ -85,6 +85,8 @@ jobs:
           sed 's/- python$/- python=${{ parameters.py_version }}/g' ${{ parameters.conda_env }} > tempenv.yml
           conda env create -f tempenv.yml -n tempenv
           source activate tempenv
+          python --version
+          ls $CONDA_PREFIX\\lib\\site-packages\\mamba\\
           mamba --version
           mamba env create -f tempenv.yml -n other
         displayName: 'Create conda environment'
