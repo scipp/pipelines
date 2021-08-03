@@ -86,19 +86,12 @@ jobs:
           conda env create -f tempenv.yml -n tempenv
           source activate tempenv
           mamba --version
-          mamba env create -f tempenv.yml -n tempenv --dry-run
-
-      - bash: |
-          set -ex
-          # Specify python version in env file
-          sed 's/- python$/- python=${{ parameters.py_version }}/g' ${{ parameters.conda_env }} > tempenv.yml
-          conda env create -f tempenv.yml -n tempenv
+          mamba env create -f tempenv.yml -n other
         displayName: 'Create conda environment'
-        condition: eq(variables['buildcppfileexists'], 'true')
 
       - bash: |
           set -ex
-          source activate tempenv
+          source activate other
           python tools/build_cpp.py --prefix=$SCIPP_INSTALL_PREFIX
         displayName: 'Build and run C++ tests'
         condition: eq(variables['buildcppfileexists'], 'true')
@@ -119,7 +112,8 @@ jobs:
 
       - bash: |
           set -ex
-          conda build $VERBOSE_OPTION \
+          source activate other
+          mamba build $VERBOSE_OPTION \
             --channel conda-forge ${{ parameters.conda_channels }} \
             $SET_PYTHON_VERSION \
             --no-anaconda-upload \
