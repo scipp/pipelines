@@ -99,6 +99,7 @@ jobs:
 
       - bash: |
           set -ex
+          source activate base
           mamba env list
           conda activate tempenv
           conda activate other
