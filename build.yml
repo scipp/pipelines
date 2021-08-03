@@ -82,6 +82,12 @@ jobs:
 
       - bash: |
           set -ex
+          mamba --version
+          sed 's/- python$/- python=${{ parameters.py_version }}/g' ${{ parameters.conda_env }} > tempenv.yml
+          mamba env create -f tempenv.yml -n tempenv --dry-run
+
+      - bash: |
+          set -ex
           # Specify python version in env file
           sed 's/- python$/- python=${{ parameters.py_version }}/g' ${{ parameters.conda_env }} > tempenv.yml
           conda env create -f tempenv.yml -n tempenv
