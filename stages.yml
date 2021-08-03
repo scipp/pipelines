@@ -47,10 +47,6 @@ parameters:
   default: false
 
 stages:
-  - template: code_quality_checks.yml
-    parameters:
-      image: ${{ parameters.settings.linux.image }}
-
   - stage: 'build_and_test'
     displayName: 'Build and Test'
     jobs:
@@ -68,22 +64,3 @@ stages:
               ${{ each param in parameters.settings[os.Key].params }}:
                 ${{ param.Key }}: ${{ param.Value }}
 
-  - template: documentation.yml
-    parameters:
-      image: ${{ parameters.settings.linux.image }}
-      conda_package_root: ${{ parameters.settings.linux.conda_package_root }}
-      conda_env: ${{ parameters.config.linux.conda_env }}
-      py_version: '3.7'
-
-  - ${{ if eq(parameters.deploy, true) }}:
-    - template: deploy.yml
-      parameters:
-        image: ${{ parameters.settings.linux.image }}
-        release: ${{ parameters.release }}
-        publish_docs: ${{ parameters.publish_docs }}
-        conda_label: ${{ parameters.conda_label }}
-        gh_pages_subdirectory: ${{ parameters.gh_pages_subdirectory }}
-        package_list:
-          ${{ each os in parameters.config }}:
-            ${{ each py in os.Value.py_versions }}:
-              ${{ parameters.settings[os.Key].conda_package_root }}-py${{ py }}: true

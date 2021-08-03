@@ -20,12 +20,6 @@ extends:
   parameters:
     verbose: ${{ parameters.verbose }}
     config:
-      linux:
-        py_versions: ['3.7']
-        conda_env: 'pipelines-developer.yml'
-      osx:
-        py_versions: ['3.7']
-        conda_env: 'pipelines-developer.yml'
       windows:
         py_versions: ['3.7']
         conda_env: 'pipelines-developer.yml'
