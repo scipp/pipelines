@@ -90,7 +90,7 @@ jobs:
       - bash: |
           set -ex
           sed 's/- python$/- python=${{ parameters.py_version }}/g' ${{ parameters.conda_env }} > other.yml
-          conda activate base
+          source activate base
           python --version
           ls $CONDA_PREFIX\\lib\\site-packages\\mamba\\
           mamba --version
