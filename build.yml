@@ -71,7 +71,7 @@ jobs:
           set -ex
           conda --version
           conda list
-          conda install --yes -n base -c conda-forge python conda-build mamba
+          conda install --yes -n base -c conda-forge python conda-build mamba boa
           conda config --set changeps1 no
           conda list
         displayName: 'Install conda-build'
@@ -115,7 +115,7 @@ jobs:
       - bash: |
           set -ex
           source activate base
-          mamba build $VERBOSE_OPTION \
+          conda mambabuild $VERBOSE_OPTION \
             --channel conda-forge ${{ parameters.conda_channels }} \
             $SET_PYTHON_VERSION \
             --no-anaconda-upload \
