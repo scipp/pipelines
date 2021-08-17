@@ -8,6 +8,9 @@ parameters:
 - name: ccache
   type: boolean
   default: false
+- name: clcache
+  type: boolean
+  default: false
 - name: OSX_VERSION
   type: string
   default: ''
@@ -42,9 +45,6 @@ jobs:
     steps:
       - checkout: self
         submodules: true
-
-      - ${{ if eq(parameters.ccache, true) }}:
-        - template: ccache.yml
 
       # Note that using set -ex when setting vso variables messes up paths
       - ${{ if contains(parameters.image, 'windows') }}:
@@ -88,10 +88,18 @@ jobs:
         displayName: 'Create conda environment'
         condition: eq(variables['buildcppfileexists'], 'true')
 
+      - ${{ if eq(parameters.ccache, true) }}:
+        - template: ccache.yml
+      - ${{ if eq(parameters.clcache, true) }}:
+        - template: clcache.yml
+
       - bash: |
           set -ex
           source activate tempenv
-          python tools/build_cpp.py --prefix=$SCIPP_INSTALL_PREFIX
+          if [ '${{ parameters.clcache }}' == 'True' ]; then
+            flags="--caching"
+          fi
+          python tools/build_cpp.py --prefix=$SCIPP_INSTALL_PREFIX $flags
         displayName: 'Build and run C++ tests'
         condition: eq(variables['buildcppfileexists'], 'true')
 
@@ -128,3 +136,10 @@ jobs:
       - ${{ if eq(parameters.ccache, true) }}:
         - bash: ccache --show-stats
           displayName: 'Report ccache statistics'
+      - ${{ if eq(parameters.clcache, true) }}:
+        - bash: |
+            set -ex
+            source activate tempenv
+            clcache -s
+          displayName: 'Report clcache statistics'
+

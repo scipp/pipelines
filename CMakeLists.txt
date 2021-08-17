@@ -10,6 +10,19 @@ endif(NOT DEFINED CMAKE_CXX_STANDARD)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+if(MSVC)
+  set(CLCACHE_PATH
+      ""
+      CACHE PATH "Path to installed clcache executable directory")
+  if(EXISTS ${CLCACHE_PATH})
+    set(CMAKE_VS_GLOBALS "CLToolExe=clcache.exe" "CLToolPath=${CLCACHE_PATH}"
+                         "TrackFileAccess=false")
+    message(STATUS "build will attempt to use clcache")
+  else(EXISTS ${CLCACHE_PATH})
+    message(STATUS "CLCACHE_PATH not specified. Not enabled.")
+    unset(CMAKE_VS_GLOBALS) # Clear all vs globals
+  endif(EXISTS ${CLCACHE_PATH})
+endif(MSVC)
 
 include(GTest)
 
