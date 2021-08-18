@@ -47,27 +47,33 @@ parameters:
 - name: noarch
   type: boolean
   default: false
+- name: build_package
+  type: boolean
+  default: true
 
 stages:
+
   - template: code_quality_checks.yml
     parameters:
       image: ${{ parameters.settings.linux.image }}
-  - stage: 'build_and_test'
-    displayName: 'Build and Test'
-    jobs:
-      - ${{ each os in parameters.config }}:
-        - ${{ each py in os.Value.py_versions }}:
-          - template: build.yml
-            parameters:
-              verbose: ${{ parameters.verbose }}
-              py_version: ${{ py }}
-              image: ${{ parameters.settings[os.Key].image }}
-              conda_package_root: ${{ parameters.settings[os.Key].conda_package_root }}
-              conda_env: ${{ os.Value.conda_env }}
-              conda_channels: ${{ parameters.conda_channels }}
-              noarch: ${{ parameters.noarch }}
-              ${{ each param in parameters.settings[os.Key].params }}:
-                ${{ param.Key }}: ${{ param.Value }}
+
+  - ${{ if eq(parameters.build_package, true) }}:
+    - stage: 'build_and_test'
+      displayName: 'Build and Test'
+      jobs:
+        - ${{ each os in parameters.config }}:
+          - ${{ each py in os.Value.py_versions }}:
+            - template: build.yml
+              parameters:
+                verbose: ${{ parameters.verbose }}
+                py_version: ${{ py }}
+                image: ${{ parameters.settings[os.Key].image }}
+                conda_package_root: ${{ parameters.settings[os.Key].conda_package_root }}
+                conda_env: ${{ os.Value.conda_env }}
+                conda_channels: ${{ parameters.conda_channels }}
+                noarch: ${{ parameters.noarch }}
+                ${{ each param in parameters.settings[os.Key].params }}:
+                  ${{ param.Key }}: ${{ param.Value }}
 
   - template: documentation.yml
     parameters:
@@ -75,6 +81,7 @@ stages:
       conda_package_root: ${{ parameters.settings.linux.conda_package_root }}
       conda_env: ${{ parameters.config.linux.conda_env }}
       py_version: '3.7'
+      build_package: ${{ parameters.build_package }}
 
   - ${{ if eq(parameters.deploy, true) }}:
     - template: deploy.yml
