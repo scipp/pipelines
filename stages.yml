@@ -91,6 +91,7 @@ stages:
         publish_docs: ${{ parameters.publish_docs }}
         conda_label: ${{ parameters.conda_label }}
         gh_pages_subdirectory: ${{ parameters.gh_pages_subdirectory }}
+        publish_package: ${{ parameters.build_package }}
         package_list:
           ${{ each os in parameters.config }}:
             ${{ each py in os.Value.py_versions }}:
