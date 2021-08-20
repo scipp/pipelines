@@ -71,7 +71,7 @@ stages:
               set -ex
               cd docs
               source activate tempenv
-              python build_docs.py --builder=doctest --prefix=$(docs_build_dir) --work_dir=$(mktemp -d)
+              python build_docs.py --builder=doctest --prefix=$(docs_build_dir) --work_dir=$(mktemp -d) --no-setup
             displayName: 'Run doctest'
           - task: PublishBuildArtifacts@1
             inputs:
