@@ -10,6 +10,7 @@ parser = argparse.ArgumentParser(description='Build doc pages with sphinx')
 parser.add_argument('--prefix', default='build')
 parser.add_argument('--work_dir', default='.doctrees')
 parser.add_argument('--builder', default='html')
+parser.add_argument('--no-setup', action='store_true', default=False)
 
 if __name__ == '__main__':
 
