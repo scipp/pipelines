@@ -13,6 +13,7 @@ requirements:
     - git
     - ninja
     - python
+    - scippbuildtools
   run:
     - python
 

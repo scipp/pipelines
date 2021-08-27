@@ -120,7 +120,8 @@ jobs:
       - bash: |
           set -ex
           conda build $VERBOSE_OPTION \
-            --channel conda-forge ${{ parameters.conda_channels }} \
+            --channel conda-forge --channel scipp \
+            ${{ parameters.conda_channels }} \
             $SET_PYTHON_VERSION \
             --no-anaconda-upload \
             --override-channels \
