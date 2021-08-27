@@ -9,7 +9,7 @@ def main(**kwargs):
     builder.cmake_configure()
     builder.enter_build_dir()
     builder.cmake_run()
-    builder.cmake_build(['pipelines-tests', 'install'])
+    builder.cmake_build(['pipelines-test', 'install'])
     builder.run_cpp_tests(['pipelines-test'])
 
 
