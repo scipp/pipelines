@@ -10,7 +10,7 @@ def main(**kwargs):
     builder.enter_build_dir()
     builder.cmake_run()
     builder.cmake_build(['pipelines-test', 'install'])
-    builder.run_cpp_tests(['pipelines-test'])
+    builder.run_cpp_tests(test_list=['pipelines-test'], test_dir='.')
 
 
 if __name__ == '__main__':
