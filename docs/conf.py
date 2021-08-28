@@ -4,5 +4,7 @@ from scippbuildtools.sphinxconf import *  # noqa: F401, F403
 
 project = u'pipelines-test'
 
+extensions = ['sphinx.ext.doctest']
+
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'pipelines-test-doc'
