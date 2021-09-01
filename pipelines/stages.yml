@@ -56,7 +56,7 @@ parameters:
 
 stages:
 
-  - template: code_quality_checks.yml
+  - template: code_quality.yml
     parameters:
       image: ${{ parameters.settings.linux.image }}
 
