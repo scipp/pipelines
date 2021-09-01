@@ -5,7 +5,10 @@ import sys
 from pathlib import Path
 docs_dir = str(Path(__file__).parent.absolute())
 sys.path.append(os.path.join(docs_dir, '..', 'src'))
-from scippbuildtools.sphinxconf import *  # noqa: E402, F401, F403
+try:
+    from scippbuildtools.sphinxconf import *  # noqa: E402, F401, F403
+except ImportError:
+    pass
 
 project = u'pipelines-test'
 
