@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright (c) 2021 Scipp contributors (https://github.com/scipp)
 import os
-import requests
 import subprocess
 
 
@@ -34,6 +33,7 @@ def make_dir(path):
 
 
 def download_file(source, target):
+    import requests
     os.write(1, "Downloading: {}\n".format(source).encode())
     r = requests.get(source, stream=True)
     with open(target, "wb") as f:
