@@ -5,7 +5,10 @@
 import os
 import sys
 import build_cpp
-import scippbuildtools as sbt
+from pathlib import Path
+tools_dir = str(Path(__file__).parent.absolute())
+sys.path.append(os.path.join(tools_dir, '..', 'src'))
+import scippbuildtools as sbt  # noqa: E402
 
 if __name__ == '__main__':
 

@@ -8,7 +8,6 @@ dependencies:
   # Build
   - ninja
   - pip
-  - scipp::scippbuildtools
 
   # Run
   - python

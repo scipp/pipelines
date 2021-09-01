@@ -1,7 +1,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright (c) 2021 Scipp contributors (https://github.com/scipp)
 
-import scippbuildtools as sbt
+from pathlib import Path
+tools_dir = str(Path(__file__).parent.absolute())
+sys.path.append(os.path.join(tools_dir, '..', 'src'))
+import scippbuildtools as sbt  # noqa: E402
 
 
 def main(**kwargs):
