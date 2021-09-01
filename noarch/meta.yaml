@@ -1,0 +1,30 @@
+package:
+  name: scippbuildtools
+  version: {{ GIT_DESCRIBE_TAG }}
+
+source:
+  path: ..
+
+requirements:
+  build:
+    - setuptools
+  run:
+    - requests
+
+test:
+  imports:
+    - scippbuildtools
+
+build:
+  number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
+  noarch: python
+  script:
+    - python setup.py install
+
+about:
+  home: https://github.com/scipp/scippbuildtools
+  license: BSD-3-Clause
+  summary: Tools for building C++ libraries, python packages and documentation
+  description: Tools for building C++ libraries, python packages and documentation
+  dev_url: https://github.com/scipp/scippbuildtools
+  doc_url:

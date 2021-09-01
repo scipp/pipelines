@@ -44,9 +44,9 @@ parameters:
 - name: publish_docs
   type: boolean
   default: true
-- name: noarch
-  type: boolean
-  default: false
+# - name: noarch
+#   type: boolean
+#   default: false
 - name: build_package
   type: boolean
   default: true
@@ -74,7 +74,7 @@ stages:
                 conda_package_root: ${{ parameters.settings[os.Key].conda_package_root }}
                 conda_env: ${{ os.Value.conda_env }}
                 conda_channels: ${{ parameters.conda_channels }}
-                noarch: ${{ parameters.noarch }}
+                # noarch: ${{ parameters.noarch }}
                 ${{ each param in parameters.settings[os.Key].params }}:
                   ${{ param.Key }}: ${{ param.Value }}
 
