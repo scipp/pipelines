@@ -1,6 +1,11 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright (c) 2021 Scipp contributors (https://github.com/scipp)
-from scippbuildtools.sphinxconf import *  # noqa: F401, F403
+import os
+import sys
+from pathlib import Path
+docs_dir = str(Path(__file__).parent.absolute())
+sys.path.append(os.path.join(docs_dir, '..', 'src'))
+from scippbuildtools.sphinxconf import *  # noqa: E402, F401, F403
 
 project = u'pipelines-test'
 
