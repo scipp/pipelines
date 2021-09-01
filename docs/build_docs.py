@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright (c) 2021 Scipp contributors (https://github.com/scipp)
 
+import os
+import sys
 from pathlib import Path
 docs_dir = str(Path(__file__).parent.absolute())
 sys.path.append(os.path.join(docs_dir, '..', 'src'))
