@@ -22,8 +22,7 @@ if __name__ == '__main__':
 
     # Create a file mover to place the built files in the correct directories
     # for conda build.
-    m = sbt.FileMover(source_root=source_root,
-                      destination_root=destination_root)
+    m = sbt.FileMover(source_root=source_root, destination_root=destination_root)
 
     # Depending on the platform, directories have different names.
     if sys.platform == "win32":
