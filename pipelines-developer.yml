@@ -8,6 +8,7 @@ dependencies:
   # Build
   - ninja
   - pip
+  - requests
 
   # Run
   - python
