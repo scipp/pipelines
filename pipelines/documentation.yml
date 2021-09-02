@@ -51,8 +51,8 @@ stages:
                 buildType: 'current'
                 specificBuildWithTriggering: true
                 downloadType: 'single'
-                # artifactName: '$(package_name)'
-                artifactName: '$PACKAGE_NAME'
+                artifactName: '$(package_name)'
+                # artifactName: '$PACKAGE_NAME'
                 downloadPath: '$(packages_dir)'
               displayName: 'Download previously built conda package'
           - bash: |

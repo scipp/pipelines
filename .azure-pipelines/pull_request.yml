@@ -23,12 +23,12 @@ extends:
       linux:
         py_versions: ['3.7', 'noarch']
         conda_env: 'pipelines-developer.yml'
-      osx:
-        py_versions: ['3.7']
-        conda_env: 'pipelines-developer.yml'
-      windows:
-        py_versions: ['3.7']
-        conda_env: 'pipelines-developer.yml'
+      # osx:
+      #   py_versions: ['3.7']
+      #   conda_env: 'pipelines-developer.yml'
+      # windows:
+      #   py_versions: ['3.7']
+      #   conda_env: 'pipelines-developer.yml'
     # Note: At this point we are not testing deploy and release. Consider
     # setting up a build matrix.
     deploy: true
