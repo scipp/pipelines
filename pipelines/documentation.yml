@@ -39,8 +39,10 @@ stages:
             displayName: 'Make directories'
           - ${{ each py in parameters.config.py_versions }}:
             - bash: |
+                echo '${{ py }}'
                 echo "##vso[task.setvariable variable=scipp_pyversion_list]${{ py }}:$SCIPP_PYVERSION_LIST"
                 echo '$SCIPP_PYVERSION_LIST'
+                echo '$(scipp_pyversion_list)'
               displayName: 'Collect python versions'
           - bash: |
               echo '$SCIPP_PYVERSION_LIST'
