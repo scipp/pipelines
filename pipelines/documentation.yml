@@ -45,11 +45,11 @@ stages:
                 echo '$(scipp_pyversion_list)'
               displayName: 'Collect python versions'
           - bash: |
-              echo '$SCIPP_PYVERSION_LIST'
-              USE_PYTHON_VERSION=$(echo '$SCIPP_PYVERSION_LIST' | cut -d ':' -f 1)
-              echo '$SCIPP_PYVERSION_LIST' | cut -d ':' -f 1
+              echo '$(scipp_pyversion_list)'
+              USE_PYTHON_VERSION=$(echo '$(scipp_pyversion_list)' | cut -d ':' -f 1)
+              echo '$(scipp_pyversion_list)' | cut -d ':' -f 1
               echo "##vso[task.setvariable variable=scipp_python_version]$USE_PYTHON_VERSION"
-              echo "##vso[task.setvariable variable=package_name]${{ parameters.conda_package_root }}-py$SCIPP_PYTHON_VERSION"
+              echo "##vso[task.setvariable variable=package_name]${{ parameters.conda_package_root }}-py$(scipp_python_version)"
             displayName: 'Select first py version in list'
           - ${{ if eq(parameters.build_package, true) }}:
             - task: DownloadBuildArtifacts@0
@@ -65,11 +65,11 @@ stages:
             displayName: Add Conda to PATH
           - bash: |
               set -ex
-              if [ '$SCIPP_PYTHON_VERSION' == 'noarch' ]; then
+              if [ '$(scipp_python_version)' == 'noarch' ]; then
                 cat ${{ parameters.config.conda_env }} > tempenv.yml
               else
                 # Specify python version in env file
-                sed 's/- python$/- python=$SCIPP_PYTHON_VERSION/g' ${{ parameters.config.conda_env }} > tempenv.yml
+                sed 's/- python$/- python=$(scipp_python_version)/g' ${{ parameters.config.conda_env }} > tempenv.yml
               fi
               conda env create -f tempenv.yml -n tempenv
             displayName: 'Create Conda environment'
