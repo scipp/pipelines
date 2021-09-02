@@ -37,7 +37,7 @@ stages:
               mkdir -p "$(packages_dir)"
               mkdir -p "$(docs_build_dir)"
             displayName: 'Make directories'
-          - ${{ each py in config.py_versions }}:
+          - ${{ each py in parameters.config.py_versions }}:
             - bash: |
                 echo "##vso[task.setvariable variable=scipp_pyversion_list]${{ py }}:$SCIPP_PYVERSION_LIST"
               displayName: 'Collect python versions'
@@ -61,10 +61,10 @@ stages:
           - bash: |
               set -ex
               if [ '$SCIPP_PYTHON_VERSION' == 'noarch' ]; then
-                cat ${{ parameters.conda_env }} > tempenv.yml
+                cat ${{ parameters.config.conda_env }} > tempenv.yml
               else
                 # Specify python version in env file
-                sed 's/- python$/- python=$SCIPP_PYTHON_VERSION/g' ${{ parameters.conda_env }} > tempenv.yml
+                sed 's/- python$/- python=$SCIPP_PYTHON_VERSION/g' ${{ parameters.config.conda_env }} > tempenv.yml
               fi
               conda env create -f tempenv.yml -n tempenv
             displayName: 'Create Conda environment'
