@@ -16,12 +16,13 @@ pr:
       - '*'
 
 extends:
-  template: ../../stages.yml
+  template: ../pipelines/stages.yml
   parameters:
     verbose: ${{ parameters.verbose }}
     config:
       linux:
-        py_versions: ['3.7']
+        # Builds both a noarch package (scippbuildtools) and dummy C++/pybind package
+        py_versions: ['noarch', '3.7']
         conda_env: 'pipelines-developer.yml'
       osx:
         py_versions: ['3.7']
@@ -29,8 +30,6 @@ extends:
       windows:
         py_versions: ['3.7']
         conda_env: 'pipelines-developer.yml'
-    # Note: At this point we are not testing deploy and release. Consider
-    # setting up a build matrix.
-    deploy: false
+    deploy: true
+    publish_docs: false
     conda_label: 'dev'
-    release: true

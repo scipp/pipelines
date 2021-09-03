@@ -4,12 +4,9 @@ parameters:
 - name: conda_package_root
   type: string
   default: ''
-- name: conda_env
-  type: string
-  default: ''
-- name: py_version
-  type: string
-  default: ''
+- name: config
+  type: object
+  default: []
 - name: build_package
   type: boolean
   default: true
@@ -27,13 +24,21 @@ stages:
         variables:
           packages_dir: '$(Build.StagingDirectory)/packages'
           docs_build_dir: '$(Build.StagingDirectory)/docs_build'
-          package_name: ${{ parameters.conda_package_root }}-py${{ parameters.py_version }}
         steps:
           - bash: |
               set -ex
               mkdir -p "$(packages_dir)"
               mkdir -p "$(docs_build_dir)"
             displayName: 'Make directories'
+          # The convention is that we select the last python version in the list
+          - ${{ each py in parameters.config.py_versions }}:
+            - bash: |
+                echo "##vso[task.setvariable variable=scipp_python_version]${{ py }}"
+              displayName: 'Set python version'
+          - bash: |
+              echo "$(scipp_python_version)"
+              echo "##vso[task.setvariable variable=package_name]${{ parameters.conda_package_root }}-py$(scipp_python_version)"
+            displayName: 'Set package name'
           - ${{ if eq(parameters.build_package, true) }}:
             - task: DownloadBuildArtifacts@0
               inputs:
@@ -48,8 +53,12 @@ stages:
             displayName: Add Conda to PATH
           - bash: |
               set -ex
-              # Specify python version in env file
-              sed 's/- python$/- python=${{ parameters.py_version }}/g' ${{ parameters.conda_env }} > tempenv.yml
+              if [ '$(scipp_python_version)' == 'noarch' ]; then
+                cat ${{ parameters.config.conda_env }} > tempenv.yml
+              else
+                # Specify python version in env file
+                sed 's/- python$/- python=$(scipp_python_version)/g' ${{ parameters.config.conda_env }} > tempenv.yml
+              fi
               conda env create -f tempenv.yml -n tempenv
             displayName: 'Create Conda environment'
           - ${{ if eq(parameters.build_package, true) }}:
