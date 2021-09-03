@@ -4,12 +4,6 @@ parameters:
 - name: conda_package_root
   type: string
   default: ''
-# - name: conda_env
-#   type: string
-#   default: ''
-# - name: py_version
-#   type: string
-#   default: ''
 - name: config
   type: object
   default: []
@@ -30,7 +24,6 @@ stages:
         variables:
           packages_dir: '$(Build.StagingDirectory)/packages'
           docs_build_dir: '$(Build.StagingDirectory)/docs_build'
-          # package_name: ${{ parameters.conda_package_root }}-py${{ parameters.py_version }}
         steps:
           - bash: |
               set -ex
@@ -43,6 +36,7 @@ stages:
                 echo "##vso[task.setvariable variable=scipp_python_version]${{ py }}"
               displayName: 'Set python version'
           - bash: |
+              echo "$(scipp_python_version)"
               echo "##vso[task.setvariable variable=package_name]${{ parameters.conda_package_root }}-py$(scipp_python_version)"
             displayName: 'Set package name'
           - ${{ if eq(parameters.build_package, true) }}:
@@ -71,7 +65,7 @@ stages:
             - bash: |
                 set -ex
                 source activate tempenv
-                conda install "$(packages_dir)/$PACKAGE_NAME/"*.tar.bz2
+                conda install "$(packages_dir)/$(package_name)/"*.tar.bz2
               displayName: 'Install previously built conda package'
           - bash: |
               set -ex

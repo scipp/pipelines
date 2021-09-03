@@ -21,16 +21,15 @@ extends:
     verbose: ${{ parameters.verbose }}
     config:
       linux:
+        # Builds both a noarch package (scippbuildtools) and dummy C++/pybind package
         py_versions: ['noarch', '3.7']
         conda_env: 'pipelines-developer.yml'
-      # osx:
-      #   py_versions: ['3.7']
-      #   conda_env: 'pipelines-developer.yml'
-      # windows:
-      #   py_versions: ['3.7']
-      #   conda_env: 'pipelines-developer.yml'
-    # Note: At this point we are not testing deploy and release. Consider
-    # setting up a build matrix.
+      osx:
+        py_versions: ['3.7']
+        conda_env: 'pipelines-developer.yml'
+      windows:
+        py_versions: ['3.7']
+        conda_env: 'pipelines-developer.yml'
     deploy: true
     publish_docs: false
     conda_label: 'dev'

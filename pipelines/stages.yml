@@ -44,9 +44,6 @@ parameters:
 - name: publish_docs
   type: boolean
   default: true
-# - name: noarch
-#   type: boolean
-#   default: false
 - name: build_package
   type: boolean
   default: true
@@ -74,7 +71,6 @@ stages:
                 conda_package_root: ${{ parameters.settings[os.Key].conda_package_root }}
                 conda_env: ${{ os.Value.conda_env }}
                 conda_channels: ${{ parameters.conda_channels }}
-                # noarch: ${{ parameters.noarch }}
                 ${{ each param in parameters.settings[os.Key].params }}:
                   ${{ param.Key }}: ${{ param.Value }}
 
@@ -83,8 +79,6 @@ stages:
       parameters:
         image: ${{ parameters.settings.linux.image }}
         conda_package_root: ${{ parameters.settings.linux.conda_package_root }}
-        # conda_env: ${{ parameters.config.linux.conda_env }}
-        # py_version: '3.7'
         config: ${{ parameters.config.linux }}
         build_package: ${{ parameters.build_package }}
 
