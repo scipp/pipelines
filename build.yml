@@ -61,11 +61,12 @@ jobs:
       - bash: |
           echo "##vso[task.setvariable variable=conda_dir]$CONDA"
         displayName: 'Configure Conda dir'
-
-      - bash: |
-          set -ex
-          sudo chown -R $USER $CONDA
-        displayName: 'Take ownership of Conda installation'
+     
+     - ${{ if contains(parameters.conda_package_root, 'osx') }}:
+       - bash: |
+           set -ex
+           sudo chown -R $USER $CONDA
+         displayName: 'Take ownership of Conda installation'
 
       - bash: |
           set -ex
