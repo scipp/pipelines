@@ -61,12 +61,7 @@ def main(prefix='install', build_dir='build', source_dir='.', caching=False):
         if osxversion is not None:
             cmake_flags.update({
                 '-DCMAKE_OSX_DEPLOYMENT_TARGET':
-                osxversion,
-                '-DCMAKE_OSX_SYSROOT':
-                os.path.join('/Applications', 'Xcode.app', 'Contents',
-                             'Developer', 'Platforms', 'MacOSX.platform',
-                             'Developer', 'SDKs',
-                             'MacOSX{}.sdk'.format(osxversion))
+                osxversion
             })
 
     if platform == 'win32':
