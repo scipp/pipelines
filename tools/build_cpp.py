@@ -59,10 +59,7 @@ def main(prefix='install', build_dir='build', source_dir='.', caching=False):
         cmake_flags.update({'-DCMAKE_INTERPROCEDURAL_OPTIMIZATION': 'OFF'})
         osxversion = os.environ.get('OSX_VERSION')
         if osxversion is not None:
-            cmake_flags.update({
-                '-DCMAKE_OSX_DEPLOYMENT_TARGET':
-                osxversion
-            })
+            cmake_flags.update({'-DCMAKE_OSX_DEPLOYMENT_TARGET': osxversion})
 
     if platform == 'win32':
         cmake_flags.update({'-G': 'Visual Studio 16 2019', '-A': 'x64'})
