@@ -1,0 +1,101 @@
+parameters:
+- name: py_version
+  type: string
+  default: ''
+- name: image
+  type: string
+  default: ''
+- name: ccache
+  type: boolean
+  default: false
+- name: clcache
+  type: boolean
+  default: false
+- name: OSX_VERSION
+  type: string
+  default: ''
+- name: conda_package_root
+  type: string
+  default: ''
+- name: conda_env
+  type: string
+  default: ''
+- name: conda_channels
+  type: string
+  default: ''
+- name: verbose
+  type: boolean
+  default: false
+- name: noarch
+  type: boolean
+  default: false
+
+jobs:
+  - job:
+    timeoutInMinutes: 120
+    displayName: ${{ format('{0}-py{1}', parameters.image, parameters.py_version) }}
+    pool:
+      vmImage: ${{ parameters.image }}
+    variables:
+      - name: OSX_VERSION
+        value: ${{ parameters.OSX_VERSION }}
+      - name: VERBOSE_OPTION
+        value: ''
+      - docs_build_dir: '$(Build.StagingDirectory)/docs_build'
+
+    steps:
+      - checkout: self
+        submodules: true
+
+      # Note that using set -ex when setting vso variables messes up paths
+      - bash: |
+          echo "##vso[task.setvariable variable=conda_dir]$CONDA"
+        displayName: 'Configure Conda dir'
+      - ${{ if not(eq(length(parameters.OSX_VERSION), 0)) }}:
+        - bash: |
+            set -ex
+            sudo chown -R $USER $CONDA
+          displayName: 'Take ownership of Conda installation'
+
+      - bash: |
+          set -ex
+          conda --version
+          conda install --yes conda-build  # TODO change env to include conda-build?
+          conda config --set always_yes yes --set changeps1 no
+        displayName: 'Install conda-build'
+
+      - ${{ if eq(parameters.verbose, true) }}:
+        - bash: |
+            echo "##vso[task.setvariable variable=verbose_option]--debug"
+          displayName: 'Activate conda build debug mode'
+
+      - bash: |
+          if [ '${{ parameters.noarch }}' == 'True' ]; then
+            echo "##vso[task.setvariable variable=conda_package_folder]noarch"
+          else
+            echo "##vso[task.setvariable variable=conda_package_folder]${{ parameters.conda_package_root }}"
+            echo "##vso[task.setvariable variable=set_python_version]--python=${{ parameters.py_version }}"
+          fi
+        displayName: 'Set package folder'
+
+      - bash: |
+          set -ex
+          export DOCS_BUILD_DIR=${{ variables.docs_build_dir }}
+          conda build $VERBOSE_OPTION \
+            --channel conda-forge ${{ parameters.conda_channels }} \
+            $SET_PYTHON_VERSION \
+            --no-anaconda-upload \
+            --override-channels \
+            conda
+        displayName: 'Python tests and conda build'
+
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: "$(conda_dir)/conda-bld/$(conda_package_folder)"
+          ArtifactName: "${{ parameters.conda_package_root }}-py${{ parameters.py_version }}"
+        displayName: 'Archive Conda package artifacts'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(docs_build_dir)'
+          ArtifactName: 'documentation'
+        displayName: 'Publish documentation artifacts'

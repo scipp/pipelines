@@ -66,7 +66,7 @@ stages:
       jobs:
         - ${{ each os in parameters.config }}:
           - ${{ each py in os.Value.py_versions }}:
-            - template: build.yml
+            - template: package-build.yml
               parameters:
                 verbose: ${{ parameters.verbose }}
                 py_version: ${{ py }}
