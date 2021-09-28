@@ -41,7 +41,8 @@ jobs:
         value: ${{ parameters.OSX_VERSION }}
       - name: VERBOSE_OPTION
         value: ''
-      - docs_build_dir: '$(Build.StagingDirectory)/docs_build'
+      - name: docs_build_dir
+        value: '$(Build.StagingDirectory)/docs_build'
 
     steps:
       - checkout: self
