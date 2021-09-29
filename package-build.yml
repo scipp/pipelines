@@ -37,8 +37,8 @@ jobs:
     pool:
       vmImage: ${{ parameters.image }}
     variables:
-      #- name: OSX_VERSION
-      #  value: ${{ parameters.OSX_VERSION }}
+      - name: OSX_VERSION
+        value: ${{ parameters.OSX_VERSION }}
       - name: VERBOSE_OPTION
         value: ''
       - name: docs_build_dir
