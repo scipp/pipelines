@@ -8,7 +8,7 @@ parameters:
       params:
         ccache: true
     osx:
-      image: 'macOS-10.15'
+      image: 'macOS-10.14'
       conda_package_root: 'osx-64'
       params:
         OSX_VERSION: '10.15'
