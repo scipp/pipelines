@@ -63,9 +63,8 @@ def main(prefix='install', build_dir='build', source_dir='.', caching=False):
                 '-DCMAKE_OSX_DEPLOYMENT_TARGET':
                 osxversion,
                 '-DCMAKE_OSX_SYSROOT':
-                os.path.join('/Applications', 'Xcode.app', 'Contents',
-                             'Developer', 'Platforms', 'MacOSX.platform',
-                             'Developer', 'SDKs',
+                os.path.join('/Applications', 'Xcode.app', 'Contents', 'Developer',
+                             'Platforms', 'MacOSX.platform', 'Developer', 'SDKs',
                              'MacOSX{}.sdk'.format(osxversion))
             })
 
@@ -104,15 +103,13 @@ def main(prefix='install', build_dir='build', source_dir='.', caching=False):
     # Compile C++ tests and python library
     start = time.time()
     for target in ['pipelines-test', 'install']:
-        run_command(['cmake', '--build', '.', '--target', target] +
-                    build_flags,
+        run_command(['cmake', '--build', '.', '--target', target] + build_flags,
                     shell=shell)
     end = time.time()
     print('Compilation took ', end - start, ' seconds')
 
     # Run C++ tests
-    run_command([os.path.join('.', build_config, 'pipelines-test')],
-                shell=shell)
+    run_command([os.path.join('.', build_config, 'pipelines-test')], shell=shell)
 
 
 if __name__ == '__main__':
