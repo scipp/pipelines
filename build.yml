@@ -103,12 +103,14 @@ jobs:
 
       - bash: |
           set -ex
+          source activate tempenv
           export PYTHONPATH=$SCIPP_INSTALL_PREFIX
           python -m pytest -v python
         displayName: 'Python tests'
 
       - bash: |
           set -ex
+          source activate tempenv
           export PYTHONPATH=$SCIPP_INSTALL_PREFIX
           python docs/build_and_test.py
         displayName: 'Doc tests'
