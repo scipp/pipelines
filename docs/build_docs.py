@@ -16,9 +16,7 @@ if __name__ == '__main__':
     args = parser.parse_known_args()[0]
 
     # Build the docs with sphinx-build
-    status = subprocess.check_call([
-        'sphinx-build', '-b', args.builder, '-d', args.work_dir, '.',
-        args.prefix
-    ],
-                                   stderr=subprocess.STDOUT,
-                                   shell=sys.platform == "win32")
+    status = subprocess.check_call(
+        ['sphinx-build', '-b', args.builder, '-d', args.work_dir, '.', args.prefix],
+        stderr=subprocess.STDOUT,
+        shell=sys.platform == "win32")
