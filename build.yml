@@ -68,13 +68,6 @@ jobs:
           displayName: 'Take ownership of Conda installation'
 
       - bash: |
-          set -ex
-          conda --version
-          conda install --yes conda-build
-          conda config --set always_yes yes --set changeps1 no
-        displayName: 'Install conda-build'
-
-      - bash: |
           if test -f tools/build_cpp.py; then
              echo "##vso[task.setvariable variable=buildcppfileexists]true"
           fi
@@ -109,29 +102,16 @@ jobs:
           displayName: 'Activate conda build debug mode'
 
       - bash: |
-          if [ '${{ parameters.noarch }}' == 'True' ]; then
-            echo "##vso[task.setvariable variable=conda_package_folder]noarch"
-          else
-            echo "##vso[task.setvariable variable=conda_package_folder]${{ parameters.conda_package_root }}"
-            echo "##vso[task.setvariable variable=set_python_version]--python=${{ parameters.py_version }}"
-          fi
-        displayName: 'Set package folder'
+          set -ex
+          export PYTHONPATH=$SCIPP_INSTALL_PREFIX
+          python -m pytest -v python
+        displayName: 'Python tests'
 
       - bash: |
           set -ex
-          conda build $VERBOSE_OPTION \
-            --channel conda-forge ${{ parameters.conda_channels }} \
-            $SET_PYTHON_VERSION \
-            --no-anaconda-upload \
-            --override-channels \
-            conda
-        displayName: 'Python tests and conda build'
-
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: "$(conda_dir)/conda-bld/$(conda_package_folder)"
-          ArtifactName: "${{ parameters.conda_package_root }}-py${{ parameters.py_version }}"
-        displayName: 'Archive Conda package artifacts'
+          export PYTHONPATH=$SCIPP_INSTALL_PREFIX
+          python docs/build_and_test.py
+        displayName: 'Doc tests'
 
       - ${{ if eq(parameters.ccache, true) }}:
         - bash: ccache --show-stats

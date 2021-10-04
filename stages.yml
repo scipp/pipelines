@@ -66,6 +66,22 @@ stages:
       jobs:
         - ${{ each os in parameters.config }}:
           - ${{ each py in os.Value.py_versions }}:
+            - template: build.yml
+              parameters:
+                verbose: ${{ parameters.verbose }}
+                py_version: ${{ py }}
+                image: ${{ parameters.settings[os.Key].image }}
+                conda_package_root: ${{ parameters.settings[os.Key].conda_package_root }}
+                conda_env: ${{ os.Value.conda_env }}
+                conda_channels: ${{ parameters.conda_channels }}
+                noarch: ${{ parameters.noarch }}
+                ${{ each param in parameters.settings[os.Key].params }}:
+                  ${{ param.Key }}: ${{ param.Value }}
+    - stage: 'package_build_and_test'
+      displayName: 'conda build'
+      jobs:
+        - ${{ each os in parameters.config }}:
+          - ${{ each py in os.Value.py_versions }}:
             - template: package-build.yml
               parameters:
                 verbose: ${{ parameters.verbose }}
