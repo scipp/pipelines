@@ -94,15 +94,6 @@ stages:
                 ${{ each param in parameters.settings[os.Key].params }}:
                   ${{ param.Key }}: ${{ param.Value }}
 
-  - ${{ if eq(parameters.build_docs, true) }}:
-    - template: documentation.yml
-      parameters:
-        image: ${{ parameters.settings.linux.image }}
-        conda_package_root: ${{ parameters.settings.linux.conda_package_root }}
-        conda_env: ${{ parameters.config.linux.conda_env }}
-        py_version: '3.7'
-        build_package: ${{ parameters.build_package }}
-
   - ${{ if eq(parameters.deploy, true) }}:
     - template: deploy.yml
       parameters:
