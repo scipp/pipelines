@@ -108,12 +108,13 @@ jobs:
           python -m pytest -v python
         displayName: 'Python tests'
 
-      - bash: |
-          set -ex
-          source activate tempenv
-          export PYTHONPATH=$SCIPP_INSTALL_PREFIX
-          python docs/build_and_test.py
-        displayName: 'Doc tests'
+      - ${{ if contains(parameters.image, 'ubuntu') }}:
+        - bash: |
+            set -ex
+            source activate tempenv
+            export PYTHONPATH=$SCIPP_INSTALL_PREFIX
+            python docs/build_and_test.py
+          displayName: 'Doc tests'
 
       - ${{ if eq(parameters.ccache, true) }}:
         - bash: ccache --show-stats
