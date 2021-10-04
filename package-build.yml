@@ -5,12 +5,6 @@ parameters:
 - name: image
   type: string
   default: ''
-- name: ccache
-  type: boolean
-  default: false
-- name: clcache
-  type: boolean
-  default: false
 - name: OSX_VERSION
   type: string
   default: ''

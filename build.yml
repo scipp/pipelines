@@ -14,18 +14,9 @@ parameters:
 - name: OSX_VERSION
   type: string
   default: ''
-- name: conda_package_root
-  type: string
-  default: ''
 - name: conda_env
   type: string
   default: ''
-- name: conda_channels
-  type: string
-  default: ''
-- name: verbose
-  type: boolean
-  default: false
 - name: noarch
   type: boolean
   default: false
@@ -39,8 +30,6 @@ jobs:
     variables:
       - name: OSX_VERSION
         value: ${{ parameters.OSX_VERSION }}
-      - name: VERBOSE_OPTION
-        value: ''
 
     steps:
       - checkout: self
@@ -96,11 +85,6 @@ jobs:
         displayName: 'Build and run C++ tests'
         condition: eq(variables['buildcppfileexists'], 'true')
 
-      - ${{ if eq(parameters.verbose, true) }}:
-        - bash: |
-            echo "##vso[task.setvariable variable=verbose_option]--debug"
-          displayName: 'Activate conda build debug mode'
-
       - bash: |
           set -ex
           source activate tempenv
@@ -125,4 +109,3 @@ jobs:
             source activate tempenv
             clcache -s
           displayName: 'Report clcache statistics'
-
