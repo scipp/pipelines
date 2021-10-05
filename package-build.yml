@@ -104,4 +104,4 @@ jobs:
           PathtoPublish: '$(docs_build_dir)'
           ArtifactName: 'documentation'
         displayName: 'Publish documentation artifacts'
-        condition: contains(${{ parameters.image }}, 'ubuntu')
+        condition: contains('${{ parameters.image }}', 'ubuntu')
