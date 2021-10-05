@@ -47,20 +47,12 @@ parameters:
 - name: noarch
   type: boolean
   default: false
-- name: build_package
-  type: boolean
-  default: true
-- name: build_docs
-  type: boolean
-  default: true
 
 stages:
-
-  - template: code_quality_checks.yml
-    parameters:
-      image: ${{ parameters.settings.linux.image }}
-
-  - ${{ if eq(parameters.build_package, true) }}:
+  - ${{ if not(eq(parameters.deploy, true)) }}:
+    - template: code_quality_checks.yml
+      parameters:
+        image: ${{ parameters.settings.linux.image }}
     - stage: 'build_and_test'
       displayName: 'Build and Test'
       jobs:
@@ -71,23 +63,29 @@ stages:
                 verbose: ${{ parameters.verbose }}
                 py_version: ${{ py }}
                 image: ${{ parameters.settings[os.Key].image }}
+                conda_env: ${{ os.Value.conda_env }}
+                noarch: ${{ parameters.noarch }}
+                ${{ each param in parameters.settings[os.Key].params }}:
+                  ${{ param.Key }}: ${{ param.Value }}
+
+
+  - ${{ if eq(parameters.deploy, true) }}:
+    - stage: 'package_build_and_test'
+      displayName: 'conda build'
+      jobs:
+        - ${{ each os in parameters.config }}:
+          - ${{ each py in os.Value.py_versions }}:
+            - template: package-build.yml
+              parameters:
+                verbose: ${{ parameters.verbose }}
+                py_version: ${{ py }}
+                image: ${{ parameters.settings[os.Key].image }}
                 conda_package_root: ${{ parameters.settings[os.Key].conda_package_root }}
                 conda_env: ${{ os.Value.conda_env }}
                 conda_channels: ${{ parameters.conda_channels }}
                 noarch: ${{ parameters.noarch }}
                 ${{ each param in parameters.settings[os.Key].params }}:
                   ${{ param.Key }}: ${{ param.Value }}
-
-  - ${{ if eq(parameters.build_docs, true) }}:
-    - template: documentation.yml
-      parameters:
-        image: ${{ parameters.settings.linux.image }}
-        conda_package_root: ${{ parameters.settings.linux.conda_package_root }}
-        conda_env: ${{ parameters.config.linux.conda_env }}
-        py_version: '3.7'
-        build_package: ${{ parameters.build_package }}
-
-  - ${{ if eq(parameters.deploy, true) }}:
     - template: deploy.yml
       parameters:
         image: ${{ parameters.settings.linux.image }}
@@ -95,7 +93,7 @@ stages:
         publish_docs: ${{ parameters.publish_docs }}
         conda_label: ${{ parameters.conda_label }}
         gh_pages_subdirectory: ${{ parameters.gh_pages_subdirectory }}
-        publish_package: ${{ parameters.build_package }}
+        publish_package: true
         package_list:
           ${{ each os in parameters.config }}:
             ${{ each py in os.Value.py_versions }}:
