@@ -33,6 +33,8 @@ jobs:
     variables:
       - name: OSX_VERSION
         value: ${{ parameters.OSX_VERSION }}
+      - name: docs_build_dir
+        value: '$(Build.StagingDirectory)/docs_build'
 
     steps:
       - checkout: self
@@ -100,6 +102,7 @@ jobs:
             set -ex
             source activate tempenv
             export PYTHONPATH=$SCIPP_INSTALL_PREFIX
+            export DOCS_BUILD_DIR=${{ variables.docs_build_dir }}
             python docs/build_and_test.py
           displayName: 'Doc tests'
 
@@ -112,3 +115,10 @@ jobs:
             source activate tempenv
             clcache -s
           displayName: 'Report clcache statistics'
+
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(docs_build_dir)'
+          ArtifactName: 'documentation'
+        displayName: 'Publish documentation artifacts'
+        condition: contains('${{ parameters.image }}', 'ubuntu')
