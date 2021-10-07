@@ -56,10 +56,13 @@ def main(prefix='install', build_dir='build', source_dir='.', caching=False):
     }
 
     if platform == 'darwin':
-        cmake_flags.update({'-DCMAKE_INTERPROCEDURAL_OPTIMIZATION': 'OFF'})
-        osxversion = os.environ.get('OSX_VERSION')
-        if osxversion is not None:
-            cmake_flags.update({'-DCMAKE_OSX_DEPLOYMENT_TARGET': osxversion})
+        # Note 10.14 is the minimum supported osx version
+        # conda-build otherwise defaults to 10.9
+        osxversion = os.getenv('OSX_VERSION', '10.14')
+        cmake_flags.update({
+            '-DCMAKE_INTERPROCEDURAL_OPTIMIZATION': 'OFF',
+            '-DCMAKE_OSX_DEPLOYMENT_TARGET': osxversion
+        })
 
     if platform == 'win32':
         cmake_flags.update({'-G': 'Visual Studio 16 2019', '-A': 'x64'})
@@ -96,15 +99,13 @@ def main(prefix='install', build_dir='build', source_dir='.', caching=False):
     # Compile C++ tests and python library
     start = time.time()
     for target in ['pipelines-test', 'install']:
-        run_command(['cmake', '--build', '.', '--target', target] +
-                    build_flags,
+        run_command(['cmake', '--build', '.', '--target', target] + build_flags,
                     shell=shell)
     end = time.time()
     print('Compilation took ', end - start, ' seconds')
 
     # Run C++ tests
-    run_command([os.path.join('.', build_config, 'pipelines-test')],
-                shell=shell)
+    run_command([os.path.join('.', build_config, 'pipelines-test')], shell=shell)
 
 
 if __name__ == '__main__':
