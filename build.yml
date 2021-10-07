@@ -65,7 +65,7 @@ jobs:
           cd $HOME
           wget -qO- https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
           eval "$(./bin/micromamba shell hook -s posix)"
-        bisplayName: 'Install micromamba'
+        displayName: 'Install micromamba'
 
       - bash: |
           if test -f tools/build_cpp.py; then
