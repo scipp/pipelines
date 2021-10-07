@@ -11,7 +11,7 @@ parameters:
       image: 'macOS-11'
       conda_package_root: 'osx-64'
       params:
-        OSX_VERSION: '10.14'
+        OSX_VERSION: '10.15'
     windows:
       image: 'windows-latest'
       conda_package_root: 'win-64'
