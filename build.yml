@@ -64,7 +64,7 @@ jobs:
       - bash: |
           set -ex
           conda --version
-          conda install --yes -n base -c conda-forge python mamba
+          conda install --yes -n base -c conda-forge mamba
           conda config --set changeps1 no
         displayName: 'Install mamba'
 
