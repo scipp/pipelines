@@ -23,6 +23,9 @@ parameters:
 - name: noarch
   type: boolean
   default: false
+- name: conda_package_root
+  type: string
+  default: ''
 
 jobs:
   - job:
