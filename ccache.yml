@@ -14,5 +14,7 @@ steps:
         ccache | "$(Agent.OS)"
       path: "$(CCACHE_DIR)"
     displayName: 'Process ccache'
-  - bash: ccache --show-stats
+  - bash: |
+      source activate tempenv
+      ccache --show-stats
     displayName: 'Report ccache statistics'
