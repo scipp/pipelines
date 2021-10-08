@@ -76,7 +76,7 @@ jobs:
 
       - bash: |
           set -ex
-          conda activate base
+          source activate base
           conda install --yes pyyaml
           # Generate env file from conda recipe
           python tools/metatoenv.py --dir=conda --env-file=buildenv.yml --channels=${{ parameters.conda_channels }} --platform=${{ parameters.conda_package_root }}
