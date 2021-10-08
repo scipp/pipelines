@@ -14,6 +14,9 @@ parameters:
 - name: OSX_VERSION
   type: string
   default: ''
+- name: conda_package_root
+  type: string
+  default: ''
 - name: conda_env
   type: string
   default: ''
@@ -23,9 +26,6 @@ parameters:
 - name: noarch
   type: boolean
   default: false
-- name: conda_package_root
-  type: string
-  default: ''
 
 jobs:
   - job:
