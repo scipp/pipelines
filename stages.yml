@@ -20,7 +20,10 @@ parameters:
 - name: config
   type: object
   default: []
-- name: deploy
+- name: package
+  type: boolean
+  default: false
+- name: deploy  # Used only when package=true
   type: boolean
   default: false
 - name: release
@@ -70,7 +73,7 @@ stages:
                   ${{ param.Key }}: ${{ param.Value }}
 
 
-  - ${{ if eq(parameters.deploy, true) }}:
+  - ${{ if eq(parameters.package, true) }}:
     - stage: 'package_build_and_test'
       displayName: 'conda build'
       jobs:
@@ -87,15 +90,16 @@ stages:
                 noarch: ${{ parameters.noarch }}
                 ${{ each param in parameters.settings[os.Key].params }}:
                   ${{ param.Key }}: ${{ param.Value }}
-    - template: deploy.yml
-      parameters:
-        image: ${{ parameters.settings.linux.image }}
-        release: ${{ parameters.release }}
-        publish_docs: ${{ parameters.publish_docs }}
-        conda_label: ${{ parameters.conda_label }}
-        gh_pages_subdirectory: ${{ parameters.gh_pages_subdirectory }}
-        publish_package: true
-        package_list:
-          ${{ each os in parameters.config }}:
-            ${{ each py in os.Value.py_versions }}:
-              ${{ parameters.settings[os.Key].conda_package_root }}-py${{ py }}: true
+    - ${{ if eq(parameters.deploy, true) }}:
+      - template: deploy.yml
+        parameters:
+          image: ${{ parameters.settings.linux.image }}
+          release: ${{ parameters.release }}
+          publish_docs: ${{ parameters.publish_docs }}
+          conda_label: ${{ parameters.conda_label }}
+          gh_pages_subdirectory: ${{ parameters.gh_pages_subdirectory }}
+          publish_package: true
+          package_list:
+            ${{ each os in parameters.config }}:
+              ${{ each py in os.Value.py_versions }}:
+                ${{ parameters.settings[os.Key].conda_package_root }}-py${{ py }}: true
