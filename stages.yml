@@ -8,7 +8,7 @@ parameters:
       params:
         ccache: true
     osx:
-      image: 'macOS-10.14'
+      image: 'macOS-11'
       conda_package_root: 'osx-64'
       params:
         OSX_VERSION: '10.15'
@@ -63,6 +63,7 @@ stages:
                 verbose: ${{ parameters.verbose }}
                 py_version: ${{ py }}
                 image: ${{ parameters.settings[os.Key].image }}
+                conda_package_root: ${{ parameters.settings[os.Key].conda_package_root }}
                 conda_env: ${{ os.Value.conda_env }}
                 noarch: ${{ parameters.noarch }}
                 ${{ each param in parameters.settings[os.Key].params }}:
