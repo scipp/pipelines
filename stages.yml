@@ -52,7 +52,7 @@ parameters:
   default: false
 
 stages:
-  - ${{ if not(eq(parameters.deploy, true)) }}:
+  - ${{ if not(eq(parameters.package, true)) }}:
     - template: code_quality_checks.yml
       parameters:
         image: ${{ parameters.settings.linux.image }}
