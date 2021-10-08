@@ -69,6 +69,7 @@ stages:
                 image: ${{ parameters.settings[os.Key].image }}
                 conda_package_root: ${{ parameters.settings[os.Key].conda_package_root }}
                 conda_env: ${{ os.Value.conda_env }}
+                conda_channels: ${{ parameters.conda_channels }}
                 noarch: ${{ parameters.noarch }}
                 ${{ each param in parameters.settings[os.Key].params }}:
                   ${{ param.Key }}: ${{ param.Value }}
