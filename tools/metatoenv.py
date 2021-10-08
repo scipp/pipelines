@@ -80,4 +80,4 @@ if __name__ == '__main__':
          envfile=args.env_file,
          envname=args.env_name,
          channels=channels,
-         platform=args.platform)
+         platform=args.platform.replace('-', ''))
