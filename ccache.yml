@@ -1,5 +1,6 @@
 steps:
   - bash: |
+      source activate tempenv
       conda install --yes -c conda-forge ccache
       # Set cache dir
       ccache --set-config=cache_dir="$(Pipeline.Workspace)/ccache"
