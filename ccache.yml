@@ -4,15 +4,15 @@ parameters:
   default: ''
 
 steps:
-  - bash: |
-      sudo apt-get install -y ccache
-      echo "##vso[task.prependpath]/usr/lib/ccache"
-    displayName: 'Install ccache Linux'
-    condition: contains('${{ parameters.image }}', 'ubuntu')
-  - bash: |
-      brew install ccache
-    displayName: 'Install ccache OSX'
-    condition: contains('${{ parameters.image }}', 'osx')
+  - ${{ if contains(parameters.image, 'ubuntu') }}:
+    - bash: |
+        sudo apt-get install -y ccache
+        echo "##vso[task.prependpath]/usr/lib/ccache"
+      displayName: 'Install ccache Linux'
+  - ${{ if contains(parameters.image, 'mac') }}:
+    - bash: |
+        brew install ccache
+      displayName: 'Install ccache OSX'
   - bash: |
       # Set cache dir
       ccache --set-config=cache_dir="$(Pipeline.Workspace)/ccache"
