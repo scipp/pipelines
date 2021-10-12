@@ -1,23 +1,13 @@
-parameters:
-- name: image
-  type: string
-  default: ''
-
 steps:
-  - ${{ if contains(parameters.image, 'ubuntu') }}:
-    - bash: |
-        sudo apt-get install -y ccache
-        echo "##vso[task.prependpath]/usr/lib/ccache"
-      displayName: 'Install ccache Linux'
-  - ${{ if contains(parameters.image, 'mac') }}:
-    - bash: |
-        brew install ccache
-      displayName: 'Install ccache OSX'
   - bash: |
+      source activate tempenv
+      conda install --yes -c conda-forge ccache
+      conda env config vars set CC="ccache $CC"
+      conda env config vars set CXX="ccache $CXX"
       # Set cache dir
-      # ccache --set-config=cache_dir="$(Pipeline.Workspace)/ccache"
+      ccache --set-config=cache_dir="$(Pipeline.Workspace)/ccache"
       echo "##vso[task.setvariable variable=ccache_dir]$(Pipeline.Workspace)/ccache"
-    displayName: 'Configure ccache'
+    displayName: 'Install and configure ccache'
   - task: Cache@2
     inputs:
       key: 'ccache | "$(Agent.OS)" | "$(Build.SourceVersion)"'
@@ -26,5 +16,7 @@ steps:
         ccache | "$(Agent.OS)"
       path: "$(CCACHE_DIR)"
     displayName: 'Process ccache'
-  - bash: ccache --show-stats
+  - bash: |
+      source activate tempenv
+      ccache --show-stats
     displayName: 'Report ccache statistics'
