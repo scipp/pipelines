@@ -111,9 +111,7 @@ jobs:
           displayName: 'Doc tests'
 
       - ${{ if eq(parameters.ccache, true) }}:
-        - bash: |
-            source activate tempenv
-            ccache --show-stats
+        - bash: ccache --show-stats
           displayName: 'Report ccache statistics'
       - ${{ if eq(parameters.clcache, true) }}:
         - bash: |

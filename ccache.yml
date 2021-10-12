@@ -1,9 +1,7 @@
 steps:
   - bash: |
-      source activate tempenv
-      conda install --yes -c conda-forge ccache
-      conda env config vars set CC="ccache $CC"
-      conda env config vars set CXX="ccache $CXX"
+      sudo apt-get install -y ccache
+      echo "##vso[task.prependpath]/usr/lib/ccache"
       # Set cache dir
       ccache --set-config=cache_dir="$(Pipeline.Workspace)/ccache"
       echo "##vso[task.setvariable variable=ccache_dir]$(Pipeline.Workspace)/ccache"
@@ -16,7 +14,5 @@ steps:
         ccache | "$(Agent.OS)"
       path: "$(CCACHE_DIR)"
     displayName: 'Process ccache'
-  - bash: |
-      source activate tempenv
-      ccache --show-stats
+  - bash: ccache --show-stats
     displayName: 'Report ccache statistics'
