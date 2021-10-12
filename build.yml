@@ -58,7 +58,7 @@ jobs:
       - bash: |
           echo "##vso[task.setvariable variable=conda_dir]$CONDA"
         displayName: 'Configure Conda dir'
-     
+
       - ${{ if contains(parameters.conda_package_root, 'osx') }}:
         - bash: |
             set -ex
@@ -111,9 +111,7 @@ jobs:
           displayName: 'Doc tests'
 
       - ${{ if eq(parameters.ccache, true) }}:
-        - bash: |
-            source activate tempenv
-            ccache --show-stats
+        - bash: ccache --show-stats
           displayName: 'Report ccache statistics'
       - ${{ if eq(parameters.clcache, true) }}:
         - bash: |
