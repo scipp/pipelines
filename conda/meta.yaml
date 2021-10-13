@@ -43,3 +43,9 @@ about:
   description: Test of common Azure pipelines repo for scipp
   dev_url: https://github.com/scipp/pipelines
   doc_url: https://scipp.github.io/
+
+extra:
+  developer_dependencies:
+    - pre-commit
+    - yapf
+    - flake8
