@@ -12,6 +12,7 @@ parser.add_argument('--env-name', '--name', default='')
 parser.add_argument('--channels', default='conda-forge')
 parser.add_argument('--platform', '--os', default='linux64')
 parser.add_argument('--extra', default='')
+parser.add_argument('--merge-with', default='')
 
 
 def _number_of_leading_spaces(string):
@@ -21,37 +22,87 @@ def _number_of_leading_spaces(string):
     return len(string) - len(string.lstrip(' '))
 
 
-def _find_dependencies(text):
+def _remove_global_indentation(sections):
+    out = sections.copy()
+    for name in sections:
+        min_num_spaces = 1000
+        for item in sections[name]:
+            min_num_spaces = min(min_num_spaces, _number_of_leading_spaces(item))
+        out[name] = [item[min_num_spaces:] for item in sections[name]]
+    return out
+
+
+def _parse_metafile(text):
     """
     Search the contents of a metafile for dependencies in a set of pre-defined sections.
     Return a list of dependencies.
     """
-    dependencies = []
-    sections = ["requirements:", "requires:", "developer_dependencies:"]
+    # dependencies = []
+    sections = {"requirements:": [], "requires:": []}
     append = False
     nspaces = 0
+    key = None
     for line in text:
         stripped = line.strip()
-        if append and _number_of_leading_spaces(line) <= nspaces:
-            append = False
+        if (key is not None) and _number_of_leading_spaces(line) <= nspaces:
+            key = None
         if stripped in sections:
+            key = stripped
             nspaces = _number_of_leading_spaces(line)
-            append = True
-        if append and stripped.startswith('-'):
-            dep = stripped.strip(' -')
-            if dep not in dependencies:
-                dependencies.append(dep)
-    return dependencies
+            # append = True
+        if (key is not None) and (stripped.startswith('-')):
+            # dep = stripped.strip(' -')
+            if line not in sections[key]:
+                sections[key].append(line.strip('\n'))
+
+    # for name in sections:
+    #     min_num_spaces = 1000
+    #     for item in sections[name]:
+    #         min_num_spaces = min(min_num_spaces, _number_of_leading_spaces(item))
+    #     sections[name] = [item[min_num_spaces:] for item in sections[name]]
+    # # print(sections)
+    unindented = _remove_global_indentation(sections)
+    out = []
+    for deps in unindented.values():
+        out += deps
+    return out
 
 
-def main(metafile, envfile, envname, channels, platform, extra):
+def _parse_envfile(text):
+    """
+    Search the contents of a regular conda environment file for dependencies.
+    Return a list of channels and a list of dependencies.
+    """
+    # dependencies = []
+    sections = {"name": "", "channels": [], "dependencies": []}
+    append = False
+    nspaces = 0
+    key = ""
+    for line in text:
+        parts = line.split(":")
+        if parts[0] in sections:
+            key = parts[0]
+        elif line.strip().startswith('-'):
+            sections[key].append(line.strip('\n'))
 
-    # Read and parse metafile
-    with open(metafile, "r") as f:
-        content = f.readlines()
-    all_dependencies = _find_dependencies(content)
+        # stripped = line.strip()
+        # if append and _number_of_leading_spaces(line) <= nspaces:
+        #     append = False
+        # if stripped in sections:
+        #     nspaces = _number_of_leading_spaces(line)
+        #     append = True
+        # if append and stripped.startswith('-'):
+        #     # dep = stripped.strip(' -')
+        #     if line not in dependencies:
+        #         dependencies.append(line.strip('\n'))
+    # print(sections)
+    return _remove_global_indentation(sections)
 
-    # Filter out deps for selected OS
+
+def _jinja_filter(all_dependencies, platform):
+    """
+    Filter out deps for requested platform via jinja syntax.
+    """
     dependencies = []
     for dep in all_dependencies:
         ok = True
@@ -68,23 +119,45 @@ def main(metafile, envfile, envname, channels, platform, extra):
                 if (platform not in selector) and (selector[1:-1] not in platform):
                     ok = False
             if ok:
-                dep = dep.replace(selector, '').strip()
+                dep = dep.replace(selector, '').strip('\n')
         if ok and (dep not in dependencies):
             dependencies.append(dep)
+    return dependencies
+
+
+def main(metafile, envfile, envname, channels, platform, extra, mergewith):
+
+    # Read and parse metafile
+    with open(metafile, "r") as f:
+        metacontent = f.readlines()
+    meta_dependencies = _parse_metafile(metacontent)
+    print(meta_dependencies)
+    meta_dependencies = _jinja_filter(meta_dependencies, platform)
+
+    with open(mergewith, "r") as f:
+        mergecontent = f.readlines()
+    additional = _parse_envfile(mergecontent)
+    additional["dependencies"] = _jinja_filter(additional["dependencies"], platform)
+
+    # dependencies = _jinja_filter(all_dependencies, platform)
 
     # Generate envname from output file name if name is not defined
     if len(envname) == 0:
         envname = os.path.splitext(envfile)[0]
 
+    for e in extra:
+        if len(e) > 0:
+            dependencies.append(e)
+
     # Write to output env file
     with open(envfile, "w") as out:
         out.write("name: {}\n".format(envname))
         out.write("channels:\n")
-        for channel in channels:
+        for channel in set(channels + additional["channels"]):
             out.write("  - {}\n".format(channel))
         out.write("dependencies:\n")
-        for dep in dependencies + extra:
-            out.write("  - {}\n".format(dep))
+        for dep in set(meta_dependencies + additional["dependencies"]):
+            out.write("{}\n".format(dep))
 
 
 if __name__ == '__main__':
@@ -102,4 +175,5 @@ if __name__ == '__main__':
          envname=args.env_name,
          channels=channels,
          platform=args.platform.replace('-', ''),
-         extra=extra)
+         extra=extra,
+         mergewith=args.merge_with)
