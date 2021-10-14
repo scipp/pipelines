@@ -32,6 +32,27 @@ def _remove_global_indentation(sections):
     return out
 
 
+def _parse_yaml(text):
+    out = {}
+    parent = None
+    handle = out
+    nspaces = 0
+    for line in text:
+        line = line.strip('\n')
+        if ':' in line:
+            parts = line.split(':')
+            if len(parts) == 2 and len(parts[1]) == 0:
+                handle[parts[0]] = {}
+                parent = handle
+                handle = handle[parts[0]]
+                nspaces = _number_of_leading_spaces(line)
+            else:
+                handle[parts[0]] = ':'.join(parts[1:])
+        if _number_of_leading_spaces(line) <= nspaces:
+            handle = parent
+    print(out)
+
+
 def _parse_metafile(text):
     """
     Search the contents of a metafile for dependencies in a set of pre-defined sections.
@@ -131,8 +152,10 @@ def main(metafile, envfile, envname, channels, platform, extra, mergewith):
     with open(metafile, "r") as f:
         metacontent = f.readlines()
     meta_dependencies = _parse_metafile(metacontent)
-    print(meta_dependencies)
+    # print(meta_dependencies)
     meta_dependencies = _jinja_filter(meta_dependencies, platform)
+
+    _ = _parse_yaml(metacontent)
 
     with open(mergewith, "r") as f:
         mergecontent = f.readlines()
@@ -153,7 +176,7 @@ def main(metafile, envfile, envname, channels, platform, extra, mergewith):
     with open(envfile, "w") as out:
         out.write("name: {}\n".format(envname))
         out.write("channels:\n")
-        for channel in set(channels + additional["channels"]):
+        for channel in set([c.strip(' -') for c in channels + additional["channels"]]):
             out.write("  - {}\n".format(channel))
         out.write("dependencies:\n")
         for dep in set(meta_dependencies + additional["dependencies"]):
