@@ -2,6 +2,7 @@
 # Copyright (c) 2021 Scipp contributors (https://github.com/scipp)
 import os
 import argparse
+from functools import reduce
 
 parser = argparse.ArgumentParser(
     description='Generate a conda environment file from a conda recipe meta.yaml file')
@@ -110,6 +111,33 @@ def _jinja_filter(all_dependencies, platform):
     return dependencies
 
 
+def _merge_dicts(a, b, path=None):
+    """
+    Merges b into a.
+    From: https://stackoverflow.com/a/7205107/13086629
+    """
+    if path is None: path = []
+    for key in b:
+        if key in a:
+            if isinstance(a[key], dict) and isinstance(b[key], dict):
+                _merge_dicts(a[key], b[key], path + [str(key)])
+            elif a[key] == b[key]:
+                pass  # same leaf value
+            else:
+                raise Exception('Conflict at %s' % '.'.join(path + [str(key)]))
+        else:
+            a[key] = b[key]
+    return a
+
+
+def _write_dict(d, file_handle, indent):
+    for key, value in d.items():
+        if value is None:
+            file_handle.write((" " * indent) + "- {}\n".format(key))
+        elif isinstance(value, dict):
+            _write_dict(value, file_handle=file_handle, indent=indent + 2)
+
+
 def main(metafile, envfile, envname, channels, platform, extra, mergewith):
 
     # Read and parse metafile
@@ -121,7 +149,17 @@ def main(metafile, envfile, envname, channels, platform, extra, mergewith):
     print(meta)
 
     # meta_dependencies = _jinja_filter(meta_dependencies, platform)
-    meta_dependencies = {**meta["requirements:"], **meta["test:"]["requires:"]}
+
+    # Merge two dicts into one
+    meta_dependencies = meta["requirements:"]["build:"].copy()
+    reduce(
+        _merge_dicts,
+        [meta_dependencies, meta["requirements:"]["run:"], meta["test:"]["requires:"]])
+    # meta_dependencies = {
+    #     **meta["requirements:"]["build:"],
+    #     # **meta["requirements:"]["run:"],
+    #     **meta["test:"]["requires:"]
+    # }
     print("==========================")
     print(meta_dependencies)
     print("==========================")
@@ -132,8 +170,13 @@ def main(metafile, envfile, envname, channels, platform, extra, mergewith):
     # additional["dependencies"] = _jinja_filter(additional["dependencies"], platform)
     additional_dependencies = additional["dependencies:"]
     print(additional_dependencies)
-    return
+    # return
 
+    # all_dependencies = {**meta_dependencies, **additional_dependencies}
+    _merge_dicts(meta_dependencies, additional_dependencies)
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    print(meta_dependencies)
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
     # dependencies = _jinja_filter(all_dependencies, platform)
 
     # Generate envname from output file name if name is not defined
@@ -148,11 +191,12 @@ def main(metafile, envfile, envname, channels, platform, extra, mergewith):
     with open(envfile, "w") as out:
         out.write("name: {}\n".format(envname))
         out.write("channels:\n")
-        for channel in set([c.strip(' -') for c in channels + additional["channels"]]):
+        for channel in set(channels + list(additional["channels:"].keys())):
             out.write("  - {}\n".format(channel))
         out.write("dependencies:\n")
-        for dep in set(meta_dependencies + additional["dependencies"]):
-            out.write("{}\n".format(dep))
+        _write_dict(meta_dependencies, file_handle=out, indent=0)
+        # for dep in meta_dependencies.keys():
+        #     out.write("  - {}\n".format(dep))
 
 
 if __name__ == '__main__':

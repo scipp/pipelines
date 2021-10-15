@@ -13,6 +13,7 @@ requirements:
     - pip:
       - somepackage
       - ipyvolume
+      - pythreejs
     - yoyo:
       - yoyopackage
       - ipyyoyo
