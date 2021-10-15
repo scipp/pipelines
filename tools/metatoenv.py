@@ -22,68 +22,6 @@ def _indentation_level(string):
     return len(string) - len(string.lstrip(' '))
 
 
-def _remove_global_indentation(sections):
-    out = sections.copy()
-    for name in sections:
-        min_num_spaces = 1000
-        for item in sections[name]:
-            min_num_spaces = min(min_num_spaces, _number_of_leading_spaces(item))
-        out[name] = [item[min_num_spaces:] for item in sections[name]]
-    return out
-
-
-# def _parse_group(text, indent):
-#     out = {}
-#     handle = out
-#     for i, line in enumerate(text):
-#         line = line.strip('\n')
-#         # print(line)
-#         # if _number_of_leading_spaces(line) <= nspaces:
-#         #     handle = parent
-#         # nspaces = _number_of_leading_spaces(line)
-#         # parts = line.split(':')
-#         # key = parts[0].lstrip(' -') + ':'
-#         # print("key is", key)
-#         # if key in handle:
-#         #     handle = handle[key]
-#         #     print(key)
-
-#         if ':' in line and _indentation_level(line) == indent:
-#             print(line)
-#             parts = line.split(':')
-#             key = parts[0].lstrip(' -') + ':'
-#             # if key in handle:
-#             #     handle = handle[key]
-#             if len(parts) == 2 and len(parts[1]) == 0:
-#                 # dicthandle = isinstance(handle, dict)
-#                 # if text[i + 1].lstrip(' ').startswith('-'):
-#                 #     # if dicthandle:
-#                 #     #     handle[parts[0]] = []
-#                 #     # else:
-#                 #     handle.append([])
-#                 # else:
-#                 # key = parts[0].lstrip(' -') + ':'
-#                 # if nspaces not in handles:
-#                 #     handles[nspaces] = {}
-#                 # handles[nspaces][key] = {}
-#                 out[key] = []
-#                 handle = out[key]
-#                 # indents[key] = nspaces
-
-#                 # parent = handle
-#                 # # if dicthandle:
-#                 # handle = handle[key]
-#                 # else:
-#                 #     handle = handle[0]
-#                 # nspaces = _number_of_leading_spaces(line)
-
-#             else:
-#                 out[key] = ':'.join(parts[1:])
-#         elif len(line) > 0 and not line.strip().startswith('#'):
-#             handle.append(line)
-#     return out
-
-
 def _parse_yaml(text):
     out = {}
     contents = {}
@@ -91,163 +29,59 @@ def _parse_yaml(text):
     nspaces = 0
     indents = {}
     handle = out
-    # handles = {nspaces: out}
-    # for nspaces in range(3):
-    #     handle = out
 
-    # contents.update(_parse_group(text=text, indent=0))
-    # for key in contents:
-    #     out[key] = {}
-    # print(out)
-    # # print(contents)
-    # for key, item in contents.items():
-    #     print(key, '++++++++++++++++++++++')
-    #     out[key].update(_parse_group(text=item, indent=2))
-    #     for a, b in out[key].items():
+    path = []
 
-    # print(out)
-
-    for i, line in enumerate(text):
+    # Remove all empty lines in text
+    clean_text = []
+    for line in text:
         line = line.rstrip(' \n')
+        if len(line) > 0:
+            clean_text.append(line)
+
+    for i, line in enumerate(clean_text):
+        line = line.rstrip(' \n')
+        # if len(line) == 0:
+        #     continue
 
         print(line)
         if i > 0:
             line_indent = _indentation_level(line)
-            if line_indent < _indentation_level(text[i - 1]):
+            if line_indent < _indentation_level(clean_text[i - 1]):
                 # Find handle
-                handles = []
+                # handles = []
                 current_indent = line_indent
-                for j in range(i - 1, 1, -1):
-                    # if current_indent == _indentation_level(text[j]):
-                    if _indentation_level(text[j]) < current_indent:
-                        handles.append(text[j].strip(' -\n'))
-                        current_indent = _indentation_level(text[j])
-                    if _indentation_level(text[j]) == 0:
+                for p in path[::-1]:
+                    if current_indent == p[1]:
+                        print("found path:", p[0])
+                        ind = path.index(p)
+                        handle = out
+                        for j in range(ind):
+                            handle = handle[path[j][0]]
+                        path = path[:ind]
+                        print("Path is now:", path)
                         break
-                print("HANDLES:", handles)
 
-                handle = parent
-        # nspaces = _indentation_level(line)
-        # parts = line.split(':')
-        # key = parts[0].lstrip(' -') + ':'
-        # if key in handle:
-        #     handle = handle[key]
-
-        # if ':' in line and _number_of_leading_spaces(line) == nspaces:
         if line.endswith(':'):
             key = line.strip(' -\n')
-            parent = handle
             handle[key] = {}
             handle = handle[key]
             nspaces = _indentation_level(line)
+            path.append((key, nspaces))
+            print(path)
 
-            # # parts = line.split(':')
-            # # key = parts[0].lstrip(' -') + ':'
-            # # if key in handle:
-            # #     handle = handle[key]
-            # if len(parts) == 2 and len(parts[1]) == 0:
-            #     # dicthandle = isinstance(handle, dict)
-            #     # if text[i + 1].lstrip(' ').startswith('-'):
-            #     #     # if dicthandle:
-            #     #     #     handle[parts[0]] = []
-            #     #     # else:
-            #     #     handle.append([])
-            #     # else:
-            #     # key = parts[0].lstrip(' -') + ':'
-            #     # if nspaces not in handles:
-            #     #     handles[nspaces] = {}
-            #     # handles[nspaces][key] = {}
-            #     out[key] = []
-            #     handle = out[key]
-            #     indents[key] = nspaces
-
-            #     # parent = handle
-            #     # # if dicthandle:
-            #     # handle = handle[key]
-            #     # else:
-            #     #     handle = handle[0]
-            #     # nspaces = _number_of_leading_spaces(line)
-
-            #     else:
-            #         handle[key] = ':'.join(parts[1:])
-        elif len(line) > 0:
+        else:
+            # if len(line) > 0:
             # handle.append(line)
             #     # print("handle is:", handle)
             stripped = line.lstrip(' ')
             if stripped.startswith('-'):
                 handle[stripped.strip(' -')] = None
-        # # print(out)
-    print(out)
-    # print(indents)
+            elif ':' in stripped:
+                ind = stripped.find(':')
+                handle[stripped[:ind]] = stripped[ind + 1:]
 
     return out
-
-
-def _parse_metafile(text):
-    """
-    Search the contents of a metafile for dependencies in a set of pre-defined sections.
-    Return a list of dependencies.
-    """
-    # dependencies = []
-    sections = {"requirements:": [], "requires:": []}
-    append = False
-    nspaces = 0
-    key = None
-    for line in text:
-        stripped = line.strip()
-        if (key is not None) and _number_of_leading_spaces(line) <= nspaces:
-            key = None
-        if stripped in sections:
-            key = stripped
-            nspaces = _number_of_leading_spaces(line)
-            # append = True
-        if (key is not None) and (stripped.startswith('-')):
-            # dep = stripped.strip(' -')
-            if line not in sections[key]:
-                sections[key].append(line.strip('\n'))
-
-    # for name in sections:
-    #     min_num_spaces = 1000
-    #     for item in sections[name]:
-    #         min_num_spaces = min(min_num_spaces, _number_of_leading_spaces(item))
-    #     sections[name] = [item[min_num_spaces:] for item in sections[name]]
-    # # print(sections)
-    unindented = _remove_global_indentation(sections)
-    out = []
-    for deps in unindented.values():
-        out += deps
-    return out
-
-
-def _parse_envfile(text):
-    """
-    Search the contents of a regular conda environment file for dependencies.
-    Return a list of channels and a list of dependencies.
-    """
-    # dependencies = []
-    sections = {"name": "", "channels": [], "dependencies": []}
-    append = False
-    nspaces = 0
-    key = ""
-    for line in text:
-        parts = line.split(":")
-        if parts[0] in sections:
-            key = parts[0]
-        elif line.strip().startswith('-'):
-            sections[key].append(line.strip('\n'))
-
-        # stripped = line.strip()
-        # if append and _number_of_leading_spaces(line) <= nspaces:
-        #     append = False
-        # if stripped in sections:
-        #     nspaces = _number_of_leading_spaces(line)
-        #     append = True
-        # if append and stripped.startswith('-'):
-        #     # dep = stripped.strip(' -')
-        #     if line not in dependencies:
-        #         dependencies.append(line.strip('\n'))
-    # print(sections)
-    return _remove_global_indentation(sections)
 
 
 def _jinja_filter(all_dependencies, platform):
@@ -283,16 +117,22 @@ def main(metafile, envfile, envname, channels, platform, extra, mergewith):
         metacontent = f.readlines()
     # meta_dependencies = _parse_metafile(metacontent)
     # print(meta_dependencies)
-    meta_dependencies = _parse_yaml(metacontent)
-    # print(meta_dependencies)
-    return
+    meta = _parse_yaml(metacontent)
+    print(meta)
 
-    meta_dependencies = _jinja_filter(meta_dependencies, platform)
+    # meta_dependencies = _jinja_filter(meta_dependencies, platform)
+    meta_dependencies = {**meta["requirements:"], **meta["test:"]["requires:"]}
+    print("==========================")
+    print(meta_dependencies)
+    print("==========================")
 
     with open(mergewith, "r") as f:
         mergecontent = f.readlines()
-    additional = _parse_envfile(mergecontent)
-    additional["dependencies"] = _jinja_filter(additional["dependencies"], platform)
+    additional = _parse_yaml(mergecontent)
+    # additional["dependencies"] = _jinja_filter(additional["dependencies"], platform)
+    additional_dependencies = additional["dependencies:"]
+    print(additional_dependencies)
+    return
 
     # dependencies = _jinja_filter(all_dependencies, platform)
 
