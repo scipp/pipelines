@@ -19,6 +19,7 @@ extends:
   template: ../../stages.yml
   parameters:
     verbose: ${{ parameters.verbose }}
+    conda_channels: 'conda-forge'
     config:
       linux:
         py_versions: ['3.7']
