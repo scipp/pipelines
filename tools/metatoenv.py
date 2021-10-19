@@ -152,11 +152,13 @@ def main(metafile, envfile, envname, channels, platform, extra, mergewith):
         [meta_dependencies, meta["requirements:"]["run:"], meta["test:"]["requires:"]])
 
     # Read file with additional dependencies
-    with open(mergewith, "r") as f:
-        mergecontent = f.readlines()
-    additional = _parse_yaml(mergecontent)
-    additional_dependencies = additional["dependencies:"]
-    _merge_dicts(meta_dependencies, additional_dependencies)
+    if len(mergewith) > 0:
+        with open(mergewith, "r") as f:
+            mergecontent = f.readlines()
+        additional = _parse_yaml(mergecontent)
+        additional_dependencies = additional["dependencies:"]
+        _merge_dicts(meta_dependencies, additional_dependencies)
+        channels = set(channels + list(additional["channels:"].keys()))
 
     # Add dependencies added via the command line
     for e in extra:
@@ -174,7 +176,7 @@ def main(metafile, envfile, envname, channels, platform, extra, mergewith):
     with open(envfile, "w") as out:
         out.write("name: {}\n".format(envname))
         out.write("channels:\n")
-        for channel in set(channels + list(additional["channels:"].keys())):
+        for channel in channels:
             out.write("  - {}\n".format(channel))
         out.write("dependencies:\n")
         _write_dict(meta_dependencies, file_handle=out, indent=2)
