@@ -1,35 +1,22 @@
+package:
+  name: pipelines-test
+  # Get version number from most recent Git tag
+  version: {{ GIT_DESCRIBE_TAG }}
+
+source:
+  path: ..
+
 requirements:
-  another:
-    - xx
-    - yy
-    - zz
   build:
     - cmake
     - gxx_linux-64 11.1.* [linux64]
     - git
     - ninja
     - python
-    - pip
-    - pip:
-      - somepackage
-      - ipyvolume
-      - pythreejs
-    - yoyo:
-      - yoyopackage
-      - ipyyoyo
   run:
     - python
-  neil:
-    something:
-      big:
-        - a
-        - b
-        - c
-  other: ddd
 
 test:
-  build:
-    - dummy
   requires:
     - pytest
     - sphinx

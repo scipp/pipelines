@@ -24,13 +24,23 @@ def _indentation_level(string):
 
 
 def _parse_yaml(text):
+    """
+    Parse yaml text and store into a dict.
+    Description of algorithm:
+     - if a line ends with `:`, we make a new nested dict. Current handle is then this
+       new nested dict.
+     - if a line does not end with `:`, but contains `:`, we set the value at the
+       current handle in the dict
+     - if a line does not end with `:`, and starts with `-`, we add the entry as a key
+       in the dict and set the value to `None`
+     - if the indentation level of the current line is less than the previous line, it
+       implies we a closing a block. We iterate backwards in the file until we find a
+       line with the same indent level and use the parent block of that line as our new
+       handle
+    """
     out = {}
-    contents = {}
-    parent = out
     nspaces = 0
-    indents = {}
     handle = out
-
     path = []
 
     # Remove all empty lines in text
@@ -42,25 +52,18 @@ def _parse_yaml(text):
 
     for i, line in enumerate(clean_text):
         line = line.rstrip(' \n')
-        # if len(line) == 0:
-        #     continue
 
-        print(line)
         if i > 0:
             line_indent = _indentation_level(line)
             if line_indent < _indentation_level(clean_text[i - 1]):
-                # Find handle
-                # handles = []
                 current_indent = line_indent
                 for p in path[::-1]:
                     if current_indent == p[1]:
-                        print("found path:", p[0])
                         ind = path.index(p)
                         handle = out
                         for j in range(ind):
                             handle = handle[path[j][0]]
                         path = path[:ind]
-                        print("Path is now:", path)
                         break
 
         if line.endswith(':'):
@@ -69,12 +72,7 @@ def _parse_yaml(text):
             handle = handle[key]
             nspaces = _indentation_level(line)
             path.append((key, nspaces))
-            print(path)
-
         else:
-            # if len(line) > 0:
-            # handle.append(line)
-            #     # print("handle is:", handle)
             stripped = line.lstrip(' ')
             if stripped.startswith('-'):
                 handle[stripped.strip(' -')] = None
@@ -85,18 +83,20 @@ def _parse_yaml(text):
     return out
 
 
-def _jinja_filter(all_dependencies, platform):
+def _jinja_filter(dependencies, platform):
     """
     Filter out deps for requested platform via jinja syntax.
     """
-    dependencies = []
-    for dep in all_dependencies:
+    out = {}
+    for key, value in dependencies.items():
+        if isinstance(value, dict):
+            out[key] = _jinja_filter(value, platform)
         ok = True
-        if dep.endswith(']'):
-            left = dep.rfind('[')
+        if key.endswith(']'):
+            left = key.rfind('[')
             if left == -1:
                 raise RuntimeError("Unmatched square bracket in preprocessing selector")
-            selector = dep[left:]
+            selector = key[left:]
             if selector.startswith('[not'):
                 if (platform in selector) or (selector.replace('[not', '')[:-1].strip()
                                               in platform):
@@ -105,10 +105,10 @@ def _jinja_filter(all_dependencies, platform):
                 if (platform not in selector) and (selector[1:-1] not in platform):
                     ok = False
             if ok:
-                dep = dep.replace(selector, '').strip('\n')
-        if ok and (dep not in dependencies):
-            dependencies.append(dep)
-    return dependencies
+                key = key.replace(selector, '').strip(' \n')
+        if ok and (key not in out):
+            out[key] = value
+    return out
 
 
 def _merge_dicts(a, b, path=None):
@@ -116,7 +116,8 @@ def _merge_dicts(a, b, path=None):
     Merges b into a.
     From: https://stackoverflow.com/a/7205107/13086629
     """
-    if path is None: path = []
+    if path is None:
+        path = []
     for key in b:
         if key in a:
             if isinstance(a[key], dict) and isinstance(b[key], dict):
@@ -132,9 +133,8 @@ def _merge_dicts(a, b, path=None):
 
 def _write_dict(d, file_handle, indent):
     for key, value in d.items():
-        if value is None:
-            file_handle.write((" " * indent) + "- {}\n".format(key))
-        elif isinstance(value, dict):
+        file_handle.write((" " * indent) + "- {}\n".format(key))
+        if isinstance(value, dict):
             _write_dict(value, file_handle=file_handle, indent=indent + 2)
 
 
@@ -143,49 +143,32 @@ def main(metafile, envfile, envname, channels, platform, extra, mergewith):
     # Read and parse metafile
     with open(metafile, "r") as f:
         metacontent = f.readlines()
-    # meta_dependencies = _parse_metafile(metacontent)
-    # print(meta_dependencies)
     meta = _parse_yaml(metacontent)
-    print(meta)
 
-    # meta_dependencies = _jinja_filter(meta_dependencies, platform)
-
-    # Merge two dicts into one
+    # Merge three dicts into one
     meta_dependencies = meta["requirements:"]["build:"].copy()
     reduce(
         _merge_dicts,
         [meta_dependencies, meta["requirements:"]["run:"], meta["test:"]["requires:"]])
-    # meta_dependencies = {
-    #     **meta["requirements:"]["build:"],
-    #     # **meta["requirements:"]["run:"],
-    #     **meta["test:"]["requires:"]
-    # }
-    print("==========================")
-    print(meta_dependencies)
-    print("==========================")
 
+    # Read file with additional dependencies
     with open(mergewith, "r") as f:
         mergecontent = f.readlines()
     additional = _parse_yaml(mergecontent)
-    # additional["dependencies"] = _jinja_filter(additional["dependencies"], platform)
     additional_dependencies = additional["dependencies:"]
-    print(additional_dependencies)
-    # return
-
-    # all_dependencies = {**meta_dependencies, **additional_dependencies}
     _merge_dicts(meta_dependencies, additional_dependencies)
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    print(meta_dependencies)
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    # dependencies = _jinja_filter(all_dependencies, platform)
+
+    # Add dependencies added via the command line
+    for e in extra:
+        if len(e) > 0:
+            meta_dependencies[e] = None
 
     # Generate envname from output file name if name is not defined
     if len(envname) == 0:
         envname = os.path.splitext(envfile)[0]
 
-    for e in extra:
-        if len(e) > 0:
-            dependencies.append(e)
+    # Apply Jinja syntax filtering depending on platform
+    meta_dependencies = _jinja_filter(meta_dependencies, platform=platform)
 
     # Write to output env file
     with open(envfile, "w") as out:
@@ -194,9 +177,7 @@ def main(metafile, envfile, envname, channels, platform, extra, mergewith):
         for channel in set(channels + list(additional["channels:"].keys())):
             out.write("  - {}\n".format(channel))
         out.write("dependencies:\n")
-        _write_dict(meta_dependencies, file_handle=out, indent=0)
-        # for dep in meta_dependencies.keys():
-        #     out.write("  - {}\n".format(dep))
+        _write_dict(meta_dependencies, file_handle=out, indent=2)
 
 
 if __name__ == '__main__':
