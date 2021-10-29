@@ -98,7 +98,7 @@ jobs:
           set -ex
           source activate tempenv
           export PYTHONPATH=$SCIPP_INSTALL_PREFIX
-          python -m pytest -v python
+          python -m pytest -v tests
         displayName: 'Python tests'
 
       - ${{ if contains(parameters.image, 'ubuntu') }}:
