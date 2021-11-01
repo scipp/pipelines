@@ -26,6 +26,9 @@ parameters:
 - name: noarch
   type: boolean
   default: false
+- name: prefix
+  type: string
+  default: 'install'
 
 jobs:
   - job:
@@ -47,12 +50,10 @@ jobs:
       - ${{ if contains(parameters.image, 'windows') }}:
         - bash: |
             echo "##vso[task.prependpath]$CONDA\Scripts"
-            echo "##vso[task.setvariable variable=scipp_install_prefix]$CONDA\scipp_install"
           displayName: 'Configure Conda path'
       - ${{ if not(contains(parameters.image, 'windows')) }}:
         - bash: |
             echo "##vso[task.prependpath]$CONDA/bin"
-            echo "##vso[task.setvariable variable=scipp_install_prefix]$CONDA/scipp_install"
           displayName: 'Configure Conda path'
 
       - bash: |
@@ -83,13 +84,13 @@ jobs:
             if [ '${{ parameters.clcache }}' == 'True' ]; then
               flags="--caching"
             fi
-            python tools/build_cpp.py --prefix=$SCIPP_INSTALL_PREFIX $flags
+            python tools/build_cpp.py --prefix=${{ parameters.prefix }} $flags
           displayName: 'Build and run C++ tests'
 
       - bash: |
           set -ex
           source activate tempenv
-          export PYTHONPATH=$SCIPP_INSTALL_PREFIX
+          export PYTHONPATH=${{ parameters.prefix }}
           python -m pytest -v tests
         displayName: 'Python tests'
 
@@ -97,10 +98,10 @@ jobs:
         - bash: |
             set -ex
             source activate tempenv
-            export PYTHONPATH=$SCIPP_INSTALL_PREFIX
+            export PYTHONPATH=${{ parameters.prefix }}
             export DOCS_BUILD_DIR=${{ variables.docs_build_dir }}
             python docs/build_and_test.py
-          displayName: 'Doc tests'
+          displayName: 'Documentation'
 
       - ${{ if eq(parameters.ccache, true) }}:
         - bash: ccache --show-stats
