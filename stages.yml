@@ -22,6 +22,7 @@ parameters:
       conda_package_root: 'win-64'
       params:
         clcache: true
+        build_type: debug
 - name: config
   type: object
   default: []
