@@ -41,6 +41,8 @@ jobs:
         value: ${{ parameters.OSX_VERSION }}
       - name: docs_build_dir
         value: '$(Build.StagingDirectory)/docs_build'
+      - name: python_path_dir
+        value: '$(Build.SourcesDirectory)/${{ parameters.prefix }}'
 
     steps:
       - checkout: self
@@ -84,13 +86,13 @@ jobs:
             if [ '${{ parameters.clcache }}' == 'True' ]; then
               flags="--caching"
             fi
-            python tools/build_cpp.py --prefix=${{ parameters.prefix }} $flags
+            python tools/build_cpp.py --prefix=${{ variables.python_path_dir }} $flags
           displayName: 'Build and run C++ tests'
 
       - bash: |
           set -ex
           source activate tempenv
-          export PYTHONPATH=${{ parameters.prefix }}
+          export PYTHONPATH=${{ variables.python_path_dir }}
           python -m pytest -v tests
         displayName: 'Python tests'
 
@@ -98,7 +100,7 @@ jobs:
         - bash: |
             set -ex
             source activate tempenv
-            export PYTHONPATH=${{ parameters.prefix }}
+            export PYTHONPATH=${{ variables.python_path_dir }}
             export DOCS_BUILD_DIR=${{ variables.docs_build_dir }}
             python docs/build_and_test.py
           displayName: 'Documentation'
