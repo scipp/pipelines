@@ -33,7 +33,7 @@ parameters:
 jobs:
   - job:
     timeoutInMinutes: 120
-    displayName: ${{ format('{0}-py{1}', parameters.image, parameters.py_version) }}
+    displayName: ${{ format('{0}-py{1}-{2}', parameters.image, parameters.py_version, parameters.build_type) }}
     pool:
       vmImage: ${{ parameters.image }}
     variables:
