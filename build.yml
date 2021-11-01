@@ -105,15 +105,16 @@ jobs:
             python docs/build_and_test.py
           displayName: 'Documentation'
 
-      - ${{ if eq(parameters.ccache, true) }}:
-        - bash: ccache --show-stats
-          displayName: 'Report ccache statistics'
-      - ${{ if eq(parameters.clcache, true) }}:
-        - bash: |
-            set -ex
-            source activate tempenv
-            clcache -s
-          displayName: 'Report clcache statistics'
+      - ${{ if eq(parameters.noarch, false) }}:
+        - ${{ if eq(parameters.ccache, true) }}:
+          - bash: ccache --show-stats
+            displayName: 'Report ccache statistics'
+        - ${{ if eq(parameters.clcache, true) }}:
+          - bash: |
+              set -ex
+              source activate tempenv
+              clcache -s
+            displayName: 'Report clcache statistics'
 
       - task: PublishBuildArtifacts@1
         inputs:
