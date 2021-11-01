@@ -26,11 +26,14 @@ parameters:
 - name: noarch
   type: boolean
   default: false
+- name: build_type
+  type: string
+  default: release
 
 jobs:
   - job:
     timeoutInMinutes: 120
-    displayName: ${{ format('{0}-py{1}', parameters.image, parameters.py_version) }}
+    displayName: ${{ format('{0}-py{1}-{2}', parameters.image, parameters.py_version, parameters.build_type) }}
     pool:
       vmImage: ${{ parameters.image }}
     variables:
@@ -90,7 +93,7 @@ jobs:
           if [ '${{ parameters.clcache }}' == 'True' ]; then
             flags="--caching"
           fi
-          python tools/build_cpp.py --prefix=$SCIPP_INSTALL_PREFIX $flags
+          python tools/build_cpp.py --prefix=$SCIPP_INSTALL_PREFIX --build_type=${{ parameters.build_type }} $flags
         displayName: 'Build and run C++ tests'
         condition: eq(variables['buildcppfileexists'], 'true')
 

@@ -17,6 +17,12 @@ parameters:
       conda_package_root: 'win-64'
       params:
         clcache: true
+    windows-debug:
+      image: 'windows-latest'
+      conda_package_root: 'win-64'
+      params:
+        clcache: true
+        build_type: debug
 - name: config
   type: object
   default: []
@@ -50,6 +56,9 @@ parameters:
 - name: noarch
   type: boolean
   default: false
+- name: build_type
+  type: string
+  default: release
 
 stages:
   - ${{ if not(eq(parameters.package, true)) }}:
@@ -71,7 +80,6 @@ stages:
                 noarch: ${{ parameters.noarch }}
                 ${{ each param in parameters.settings[os.Key].params }}:
                   ${{ param.Key }}: ${{ param.Value }}
-
 
   - ${{ if eq(parameters.package, true) }}:
     - stage: 'package_build_and_test'
