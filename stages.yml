@@ -74,7 +74,6 @@ stages:
               parameters:
                 verbose: ${{ parameters.verbose }}
                 py_version: ${{ py }}
-                build_type: ${{ parameters.build_type }}
                 image: ${{ parameters.settings[os.Key].image }}
                 conda_package_root: ${{ parameters.settings[os.Key].conda_package_root }}
                 conda_env: ${{ os.Value.conda_env }}
