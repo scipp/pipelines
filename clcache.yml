@@ -1,0 +1,30 @@
+steps:
+  - bash: |
+      set -ex
+      source activate tempenv
+      python -m pip install clcache
+      # Set location for clcache directory
+      echo "##vso[task.setvariable variable=clcache_dir]$(Pipeline.Workspace)\\clcache"
+    displayName: 'Install and configure clcache'
+  - task: Cache@2
+    inputs:
+      key: 'clcache-key | "$(Agent.OS)" | "$(Build.SourceVersion)"'
+      restoreKeys: |
+        clcache-key | "$(Agent.OS)" | "$(Build.SourceVersion)"
+        clcache-key | "$(Agent.OS)"
+      path: "$(CLCACHE_DIR)"
+    displayName: 'Process clcache'
+  - bash: |
+      set -ex
+      source activate tempenv
+      # Clear stats inc previous hits
+      clcache.exe -z
+      # Set maximum cache size
+      clcache.exe -M 4000000000
+    displayName: 'Configure clcache settings'
+  - bash: |
+      set -ex
+      source activate tempenv
+      # Get stats
+      clcache.exe -s 
+    displayName: 'Report clcache statistics'

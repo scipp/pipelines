@@ -6,7 +6,9 @@ channels:
 
 dependencies:
   # Build
+  - cmake
   - ninja
+  - pip
 
   # Run
   - python

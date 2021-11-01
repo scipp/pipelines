@@ -8,11 +8,13 @@ import shutil
 import subprocess
 import multiprocessing
 import sys
+import time
 
 parser = argparse.ArgumentParser(description='Build C++ library and run tests')
 parser.add_argument('--prefix', default='install')
 parser.add_argument('--source_dir', default='.')
 parser.add_argument('--build_dir', default='build')
+parser.add_argument('--caching', action='store_true', default=False)
 
 
 def run_command(cmd, shell):
@@ -23,7 +25,7 @@ def run_command(cmd, shell):
     return subprocess.check_call(cmd, stderr=subprocess.STDOUT, shell=shell)
 
 
-def main(prefix='install', build_dir='build', source_dir='.'):
+def main(prefix='install', build_dir='build', source_dir='.', caching=False):
     """
     Platform-independent function to run cmake, build, install and C++ tests.
     """
@@ -47,28 +49,27 @@ def main(prefix='install', build_dir='build', source_dir='.'):
     # Default cmake flags
     cmake_flags = {
         '-G': 'Ninja',
-        '-DPYTHON_EXECUTABLE': shutil.which("python"),
+        '-DPython_EXECUTABLE': shutil.which("python"),
         '-DCMAKE_INSTALL_PREFIX': prefix,
         '-DWITH_CTEST': 'OFF',
         '-DCMAKE_INTERPROCEDURAL_OPTIMIZATION': 'ON'
     }
 
     if platform == 'darwin':
-        cmake_flags.update({'-DCMAKE_INTERPROCEDURAL_OPTIMIZATION': 'OFF'})
-        osxversion = os.environ.get('OSX_VERSION')
-        if osxversion is not None:
-            cmake_flags.update({
-                '-DCMAKE_OSX_DEPLOYMENT_TARGET':
-                osxversion,
-                '-DCMAKE_OSX_SYSROOT':
-                os.path.join('/Applications', 'Xcode.app', 'Contents',
-                             'Developer', 'Platforms', 'MacOSX.platform',
-                             'Developer', 'SDKs',
-                             'MacOSX{}.sdk'.format(osxversion))
-            })
+        # Note 10.14 is the minimum supported osx version
+        # conda-build otherwise defaults to 10.9
+        osxversion = os.getenv('OSX_VERSION', '10.14')
+        cmake_flags.update({
+            '-DCMAKE_INTERPROCEDURAL_OPTIMIZATION': 'OFF',
+            '-DCMAKE_OSX_DEPLOYMENT_TARGET': osxversion
+        })
 
     if platform == 'win32':
         cmake_flags.update({'-G': 'Visual Studio 16 2019', '-A': 'x64'})
+        # clcache conda installed to env Scripts dir in env if present
+        scripts = os.path.join(os.environ.get('CONDA_PREFIX'), 'Scripts')
+        if caching and os.path.exists(os.path.join(scripts, 'clcache.exe')):
+            cmake_flags.update({'-DCLCACHE_PATH': scripts})
         shell = True
         build_config = 'Release'
 
@@ -96,18 +97,20 @@ def main(prefix='install', build_dir='build', source_dir='.'):
     run_command(['cmake', '-B', '.', '-S', source_dir, '-LA'], shell=shell)
 
     # Compile C++ tests and python library
+    start = time.time()
     for target in ['pipelines-test', 'install']:
-        run_command(['cmake', '--build', '.', '--target', target] +
-                    build_flags,
+        run_command(['cmake', '--build', '.', '--target', target] + build_flags,
                     shell=shell)
+    end = time.time()
+    print('Compilation took ', end - start, ' seconds')
 
     # Run C++ tests
-    run_command([os.path.join('.', build_config, 'pipelines-test')],
-                shell=shell)
+    run_command([os.path.join('.', build_config, 'pipelines-test')], shell=shell)
 
 
 if __name__ == '__main__':
     args = parser.parse_args()
     main(prefix=args.prefix,
          build_dir=args.build_dir,
-         source_dir=args.source_dir)
+         source_dir=args.source_dir,
+         caching=args.caching)
