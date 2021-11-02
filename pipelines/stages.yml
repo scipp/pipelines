@@ -56,7 +56,7 @@ parameters:
 
 stages:
   - ${{ if not(eq(parameters.package, true)) }}:
-    - template: code_quality_checks.yml
+    - template: code_quality.yml
       parameters:
         image: ${{ parameters.settings.linux.image }}
     - stage: 'build_and_test'
