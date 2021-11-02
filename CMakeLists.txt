@@ -6,5 +6,7 @@ cmake_minimum_required(VERSION 3.16)
 project(pipelines-test)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
+add_subdirectory(lib)
+
 include(GNUInstallDirs)
 install(DIRECTORY "src/pipelines-test/" DESTINATION "pipelines-test")
