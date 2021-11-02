@@ -50,10 +50,13 @@ parameters:
 - name: noarch
   type: boolean
   default: false
+- name: prefix
+  type: string
+  default: 'install'
 
 stages:
   - ${{ if not(eq(parameters.package, true)) }}:
-    - template: code_quality_checks.yml
+    - template: code_quality.yml
       parameters:
         image: ${{ parameters.settings.linux.image }}
     - stage: 'build_and_test'
@@ -69,6 +72,7 @@ stages:
                 conda_package_root: ${{ parameters.settings[os.Key].conda_package_root }}
                 conda_env: ${{ os.Value.conda_env }}
                 noarch: ${{ parameters.noarch }}
+                prefix: ${{ parameters.prefix }}
                 ${{ each param in parameters.settings[os.Key].params }}:
                   ${{ param.Key }}: ${{ param.Value }}
 

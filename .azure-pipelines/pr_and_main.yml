@@ -5,9 +5,7 @@ parameters:
   default: false
 
 trigger:
-  branches:
-    exclude:
-      - '*'
+  - main
 
 pr:
   autoCancel: true
@@ -16,7 +14,7 @@ pr:
       - '*'
 
 extends:
-  template: ../../stages.yml
+  template: ../pipelines/stages.yml
   parameters:
     verbose: ${{ parameters.verbose }}
     config:
