@@ -105,7 +105,7 @@ def main(prefix='install', build_dir='build', source_dir='.', caching=False):
     print('Compilation took ', end - start, ' seconds')
 
     # Run C++ tests
-    run_command([os.path.join('.', build_config, 'pipelines-test')], shell=shell)
+    run_command([os.path.join('lib', build_config, 'pipelines-test')], shell=shell)
 
 
 if __name__ == '__main__':
