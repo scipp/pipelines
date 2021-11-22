@@ -17,9 +17,6 @@ parameters:
 - name: conda_package_root
   type: string
   default: ''
-- name: conda_env
-  type: string
-  default: ''
 - name: verbose
   type: boolean
   default: false
@@ -29,6 +26,9 @@ parameters:
 - name: prefix
   type: string
   default: 'install'
+- name: conda_channels
+  type: string
+  default: ''
 
 jobs:
   - job:
@@ -70,8 +70,10 @@ jobs:
 
       - bash: |
           set -ex
+          # Generate env file from conda recipe
+          python tools/metatoenv.py --dir=conda --env-file=buildenv.yml --channels=${{ parameters.conda_channels }} --platform=${{ parameters.conda_package_root }}
           # Specify python version in env file
-          sed 's/- python$/- python=${{ parameters.py_version }}/g' ${{ parameters.conda_env }} > tempenv.yml
+          sed 's/- python$/- python=${{ parameters.py_version }}/g' buildenv.yml > tempenv.yml
           conda env create -f tempenv.yml -n tempenv
         displayName: 'Create conda environment'
 

@@ -17,9 +17,6 @@ parameters:
 - name: conda_package_root
   type: string
   default: ''
-- name: conda_env
-  type: string
-  default: ''
 - name: conda_channels
   type: string
   default: ''
@@ -88,7 +85,7 @@ jobs:
           set -ex
           export DOCS_BUILD_DIR=${{ variables.docs_build_dir }}
           conda build $VERBOSE_OPTION \
-            --channel conda-forge ${{ parameters.conda_channels }} \
+            --channel $(sed 's/,/ --channel /g' <<< ${{ parameters.conda_channels }}) \
             $SET_PYTHON_VERSION \
             --no-anaconda-upload \
             --override-channels \
